@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <title>BTVN3</title>
+    <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
-    <% users.forEach(user => {  %>
-        <span><%= user.id %></span>
-        <span><%= user.name %></span>
-        <% if (user.isLocked) { %>
-            <span>Đã khoá</span>
-        <% } %>
-        <br>
-    <% }) %>
+    <div class="container">
+        <div class="navbar">
+            <button><a href="/auth/register">Register</a></button>
+            <button><a href="/auth/login">Login</a></button>
+        </div>
+    </div>
+    
 </body>
+<footer>
+    <p>HIT NodeJS 2024</p>
+</footer>
 </html>

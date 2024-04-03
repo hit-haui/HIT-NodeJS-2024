@@ -10,25 +10,36 @@ app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  const users = [
-    {
-      id: 1,
-      name: 'John',
-      isLocked: false,
-    },
-    {
-      id: 2,
-      name: 'Mika',
-      isLocked: true,
-    },
-    {
-      id: 3,
-      name: 'Kenvin',
-      isLocked: false,
-    },
-  ];
-  res.render('pages/index', { users });
+// app.get('/', (req, res) => {
+//   const users = [
+//     {
+//       id: 1,
+//       name: 'John',
+//       isLocked: false,
+//     },
+//     {
+//       id: 2,
+//       name: 'Mika',
+//       isLocked: true,
+//     },
+//     {
+//       id: 3,
+//       name: 'Kenvin',
+//       isLocked: false,
+//     },
+//   ];
+//   res.render('pages/index', { users });
+// });
+app.get("/",  (req, res) => {
+   res.render("pages/index");
+})
+
+app.get('/auth/login', (req, res) => {
+  res.render('pages/login')
+});
+
+app.get('/auth/register', (req, res) => {
+  res.render('pages/register')
 });
 
 app.all('*', (req, res) => {
