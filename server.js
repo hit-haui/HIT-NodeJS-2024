@@ -3,6 +3,9 @@ const express = require('express');
 const path = require('path');
 require('dotenv').config();
 
+const app = express();
+const port = process.env.PORT || 3000;
+
 app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -36,7 +39,6 @@ app.get("/auth/login", (req, res) => {
 app.get('/auth/register', (req, res) => {
   res.render('pages/register')
 });
-
 
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
