@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header class="header flex-center">
+        <div class="wide flex-sb">
+            <div class="header-logo">
+                <img src="/images/logo.png" alt="logo">
+            </div>
+            <nav class="header-nav">
+                <ul class="flex-sb">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/auth/login">Login</a></li>
+                    <li><a href="/auth/register">Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class='login-signup flex-center'>
+        <div class="wide wapper">
+            <h1>Login</h1>
+            <form>
+                <div class="form-item flex-sb">
+                    <input type="email" name="email" id="email" placeholder='Email' autoComplete="username"/>
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="form-item">
+                    <input type="password" name="password" id="password" placeholder='Password' autoComplete="current-password"/>
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <a href="" class='forgot-password-link'>Forgot password?</a>
+                <button type='submit' class='btn'>Login</button>
+                <p>Don't have an account? <a href="/auth/register" class='register-link'>Register</a></p>
+            </form>
+        </div>
+    </div>
+    <footer class="footer footer-login-signup">
+        &copy; 
+        HIT NodeJS 2024
+    </footer>
+</body>
+</html>

@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const express = require('express');
 const path = require('path');
+const { render } = require('ejs');
 require('dotenv').config();
 
 const app = express();
@@ -10,25 +11,37 @@ app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
+// app.get('/', (req, res) => {
+//   const users = [
+//     {
+//       id: 1,
+//       name: 'John',
+//       isLocked: false,
+//     },
+//     {
+//       id: 2,
+//       name: 'Mika',
+//       isLocked: true,
+//     },
+//     {
+//       id: 3,
+//       name: 'Kenvin',
+//       isLocked: false,
+//     },
+//   ];
+//   res.render('pages/index', { users });
+// });
+
 app.get('/', (req, res) => {
-  const users = [
-    {
-      id: 1,
-      name: 'John',
-      isLocked: false,
-    },
-    {
-      id: 2,
-      name: 'Mika',
-      isLocked: true,
-    },
-    {
-      id: 3,
-      name: 'Kenvin',
-      isLocked: false,
-    },
-  ];
-  res.render('pages/index', { users });
+  res.render('pages/home')
+})
+
+app.get('/auth/login', (req, res) => {
+  res.render('pages/login')
+});
+
+app.get('/auth/register', (req, res) => {
+  res.render('pages/register')
 });
 
 app.all('*', (req, res) => {
@@ -41,3 +54,5 @@ app.all('*', (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
+
