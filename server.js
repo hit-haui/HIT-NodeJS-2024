@@ -31,6 +31,13 @@ app.get('/', (req, res) => {
   res.render('pages/index', { users });
 });
 
+app.get('/auth/login', (req, res) => {
+  res.render('pages/login')
+});
+
+app.get('/auth/register', (req, res) => {
+  res.render('pages/register')
+});
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
     message: 'Not found',
