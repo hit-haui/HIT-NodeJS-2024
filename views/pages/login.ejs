@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css">
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .box1{
+            width: 800px;
+            height: 500px;
+            border: 2px solid white; 
+            margin: auto; 
+            display: block;
+            border-radius: 30px;
+            margin-top: 50px;            
+        }
+
+        .box2{
+            margin: auto;
+            width: 300px;
+            height: 200px;
+            border: 2px solid white;
+            border-radius: 30px;
+            display: flex;
+            margin-top: 150px;
+            color: white;
+        }
+
+        .box2 input{
+            margin: auto;
+            width: 200px;
+            height: 30px;
+            margin-top: 10px;
+        }
+
+        .boxtop{
+            margin-left: 500px;
+            position: absolute;
+            color: white;
+            margin-top: 40px;
+        }
+
+        .boxtop ul{
+            display: grid;
+            grid-template-columns: auto auto;
+        }
+
+        .boxtop ul li a{
+            border: 2px solid white;
+            text-decoration: none;
+            color: white;
+            padding: 5px 20px;
+            border-radius: 10px;
+            margin-right: 20px;
+        }
+
+    </style>
+
+</head>
+<body style="background-color: black; width: 900px; height: 550px; margin: auto">
+    <div class="box1">
+        <div class="boxtop">
+            <ul type="none">
+                <li><a href="http://localhost:3000/auth/login">Login</a></li>
+                <li><a href="http://localhost:3000/auth/register">Register</a></li>
+            </ul>
+        </div>
+        <div class="box2">
+            <!-- <p style="text-align: center; margin: auto; font-size: 20px;">Form login / register</p> -->
+            <form action="#">
+            <table style="margin: auto;">
+                <thead>
+                    <tr>
+                        <th colspan="2">
+                            <h2 >Login</h2>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Tài khoản</th>
+                        <th><input type="text"></th>
+                    </tr>
+                    <tr>
+                        <th>Mật khẩu</th>
+                        <th><input type="password"></th>
+                    </tr>
+                </thead>
+            </table>
+            <div style="display: flex;">
+                <input type="submit" value="Đăng nhập" style="width: 100px;">
+                <input type="reset" name="" id="" value="Xóa" style="width: 100px;">
+            </div>
+            </form>
+        </div>
+        <p style="color: white; text-align: center ; margin-top: 100px;">HIT Nodejs 2024</p>
+    </div>
+</body>
+</html>
