@@ -1,43 +1,37 @@
 const httpStatus = require('http-status');
 const express = require('express');
-const path = require('path');
 require('dotenv').config();
+
+const viewRoute = require('./routes/view.route');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(express.json());
 app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  const users = [
-    {
-      id: 1,
-      name: 'John',
-      isLocked: false,
-    },
-    {
-      id: 2,
-      name: 'Mika',
-      isLocked: true,
-    },
-    {
-      id: 3,
-      name: 'Kenvin',
-      isLocked: false,
-    },
-  ];
-  res.render('pages/index', { users });
+app.get('/api/v1/users/:userId', (req, res) => {
+  // tiếp theo xử lý lấy dữ liệu trong db
+
+  // giải quyết vấn đề tìm kiếm chi tiết
+  const { userId } = req.params;
+  res.send(userId);
 });
 
-app.get('/auth/login', (req, res) => {
-  res.render('pages/login')
+app.get('/api/v1/users', (req, res) => {
+  console.log(req.query);
+  // giải quyết vấn đề tìm kiếm
+  res.send(req.query);
 });
 
-app.get('/auth/register', (req, res) => {
-  res.render('pages/register')
+app.post('/api/v1/users', (req, res) => {
+  const { fullname, email } = req.body;
+  res.send({ fullname, email });
 });
+
+app.use('/auth', viewRoute);
 
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
@@ -49,3 +43,9 @@ app.all('*', (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
+// post get put delete
+// create - post
+// get - lấy dữ liệu
+// put/patch - sử dụng để thay đổi dữ liệu
+// delete - xóa dữ liệu
