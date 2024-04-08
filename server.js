@@ -1,6 +1,6 @@
-const httpStatus = require('http-status');
-const express = require('express');
 require('dotenv').config();
+const express = require('express');
+const httpStatus = require('http-status');
 
 const viewRoute = require('./routes/view.route');
 
@@ -13,23 +13,6 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 app.use('/auth', viewRoute);
-
-app.get('/api/v1/users/:id', (req, res) => {
-  console.log(req.params.id);
-  let { id } = req.params;
-  res.send(id);
-})
-
-app.get('/api/v1/users', (req, res) => {
-  console.log(req.query);
-  res.send(req.query);
-})
-
-app.post('/api/v1/users', (req, res) => {
-  const { username, password } = req.body;
-  console.log(username, password);
-  res.send(req.body);
-})
 
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
