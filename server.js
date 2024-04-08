@@ -1,43 +1,35 @@
 const httpStatus = require('http-status');
 const express = require('express');
-const path = require('path');
 require('dotenv').config();
+
+const viewRoute = require('./routes/view.route');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(express.json());
 app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  const users = [
-    {
-      id: 1,
-      name: 'John',
-      isLocked: false,
-    },
-    {
-      id: 2,
-      name: 'Mika',
-      isLocked: true,
-    },
-    {
-      id: 3,
-      name: 'Kenvin',
-      isLocked: false,
-    },
-  ];
-  res.render('pages/index', { users });
-});
+app.use('/auth', viewRoute);
 
-app.get('/auth/login', (req, res) => {
-  res.render('pages/login')
-});
+app.get('/api/v1/users/:id', (req, res) => {
+  console.log(req.params.id);
+  let { id } = req.params;
+  res.send(id);
+})
 
-app.get('/auth/register', (req, res) => {
-  res.render('pages/register')
-});
+app.get('/api/v1/users', (req, res) => {
+  console.log(req.query);
+  res.send(req.query);
+})
+
+app.post('/api/v1/users', (req, res) => {
+  const { username, password } = req.body;
+  console.log(username, password);
+  res.send(req.body);
+})
 
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
