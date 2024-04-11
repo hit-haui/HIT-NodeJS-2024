@@ -1,43 +1,24 @@
 const httpStatus = require('http-status');
+const viewRoute = require('./routes/view.route');
+const userRoute = require('./routes/user.route');
 const express = require('express');
-const path = require('path');
 require('dotenv').config();
+
+const viewRouter = require('./routes/view.route');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(express.json());
 app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  const users = [
-    {
-      id: 1,
-      name: 'John',
-      isLocked: false,
-    },
-    {
-      id: 2,
-      name: 'Mika',
-      isLocked: true,
-    },
-    {
-      id: 3,
-      name: 'Kenvin',
-      isLocked: false,
-    },
-  ];
-  res.render('pages/index', { users });
-});
 
-app.get('/auth/login', (req, res) => {
-  res.render('pages/login')
-});
+app.use('/auth', viewRoute);
 
-app.get('/auth/register', (req, res) => {
-  res.render('pages/register')
-});
+app.use('/api/v1/users', userRoute);
+
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
     message: 'Not found',
@@ -48,3 +29,11 @@ app.all('*', (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
+
+// route => mỗi route lại xử lý cho một resoure riêng
+// post get put delete
+// post = create
+// get = lấy dữ liệu
+// put = thay đổi dữ liệu
+// delete = xóa dữ liệu
