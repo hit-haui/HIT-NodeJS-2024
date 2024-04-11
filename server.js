@@ -1,7 +1,9 @@
 const httpStatus = require('http-status');
 const express = require('express');
-const path = require('path');
 require('dotenv').config();
+
+const viewRoute = require("./routes/view.route");
+const userRoute = require('./routes/user.route');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -10,34 +12,28 @@ app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  const users = [
-    {
-      id: 1,
-      name: 'John',
-      isLocked: false,
-    },
-    {
-      id: 2,
-      name: 'Mika',
-      isLocked: true,
-    },
-    {
-      id: 3,
-      name: 'Kenvin',
-      isLocked: false,
-    },
-  ];
-  res.render('pages/index', { users });
-});
+app.use(express.json());  //su dung req.body phai them middleware nay
 
-app.get('/auth/login', (req, res) => {
-  res.render('pages/login')
-});
+app.use('/api/v1/users', userRoute);
+// app.get('/api/v1/users/:userId', (req, res) => {
+//   //xu ly lay du lieu trong db
 
-app.get('/auth/register', (req, res) => {
-  res.render('pages/register')
-});
+//   //xu ly van de tim kiem
+//   const {userId} = req.params;
+//   res.send(userId);
+// });
+
+// app.get('/api/v1/users', (req, res) => {
+//   //giai quyet van de tim kiem chi tiet
+//   res.send(req.query);
+// });
+
+// app.post('/api/v1/users', (req, res) => {
+//   res.send(req.body);
+// });
+
+
+app.use('/auth', viewRoute);
 
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
