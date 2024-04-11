@@ -3,6 +3,7 @@ const express = require('express');
 const httpStatus = require('http-status');
 
 const viewRoute = require('./routes/view.route');
+const userRoute = require('./routes/user.route');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -13,6 +14,8 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 app.use('/auth', viewRoute);
+
+app.use('/api/v1/users', userRoute);
 
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
