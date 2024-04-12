@@ -12,7 +12,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 app.use('/auth', viewRoute);
-app.use('/api/v1',userRoute);
+app.use('/api/v1', userRoute);
 
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
