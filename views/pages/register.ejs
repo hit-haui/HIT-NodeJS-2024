@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+<<<<<<< HEAD
   <head>
     <%- include('../components/header') %>
     <link rel="stylesheet" href="/css/style.css" />
@@ -26,4 +27,35 @@
     </div>
     <%- include('../components/nav') %>
   </body>
+=======
+
+<head>
+  <%- include('../components/header') %>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <form class="form">
+      <h1>Register</h1>
+      <div class="input-wrapper">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" autocomplete="username" />
+      </div>
+      <div class="input-wrapper">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" autocomplete="current-password" />
+      </div>
+      <div class="input-wrapper">
+        <label for="re-password">Confirm Password</label>
+        <input type="password" name="re-password" id="re-password" autocomplete="current-password" />
+      </div>
+      <button>Register</button>
+      <p>Already have an account? <a href="login">Login</a></p>
+    </form>
+  </div>
+  <%- include('../components/nav') %>
+</body>
+
+>>>>>>> 61f810fb2860492a0fecb5ad513bb685a1422d8c
 </html>

@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+<<<<<<< HEAD
   <head>
     <%- include('../components/header') %>
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.1.2/css/all.css" />
@@ -23,4 +24,32 @@
     </div>
     <%- include('../components/nav') %>
   </body>
+=======
+
+<head>
+  <%- include('../components/header') %>
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.1.2/css/all.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <form class="form">
+      <h1>Login</h1>
+      <div class="input-wrapper">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" autocomplete="username" />
+      </div>
+      <div class="input-wrapper">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" autocomplete="current-password" />
+      </div>
+      <button>Login</button>
+      <p>Don't have an account? <a href="register">Sign up</a></p>
+    </form>
+  </div>
+  <%- include('../components/nav') %>
+</body>
+
+>>>>>>> 61f810fb2860492a0fecb5ad513bb685a1422d8c
 </html>

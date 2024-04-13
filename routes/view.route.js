@@ -1,7 +1,8 @@
 const express = require('express');
-const viewRoute = express.Router();
 
 const viewController = require('../controllers/view.controller');
+
+const viewRoute = express.Router();
 
 viewRoute.get('/login', viewController.loginPage);
 

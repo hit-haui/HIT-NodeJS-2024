@@ -6,4 +6,7 @@ const registerPage = (req, res) => {
   res.render('pages/register', { title: 'Register page' });
 };
 
-module.exports = { loginPage, registerPage };
+module.exports = {
+  loginPage,
+  registerPage,
+};
