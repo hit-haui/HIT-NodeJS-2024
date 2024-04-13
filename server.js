@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const express = require('express');
 require('dotenv').config();
 
-const viewRoute = require("./routes/view.route");
+const viewRoute = require('./routes/view.route');
 const userRoute = require('./routes/user.route');
 
 const app = express();
@@ -12,7 +12,7 @@ app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.use(express.json());  //su dung req.body phai them middleware nay
+app.use(express.json()); //su dung req.body phai them middleware nay
 
 app.use('/api/v1/users', userRoute);
 // app.get('/api/v1/users/:userId', (req, res) => {
@@ -31,7 +31,6 @@ app.use('/api/v1/users', userRoute);
 // app.post('/api/v1/users', (req, res) => {
 //   res.send(req.body);
 // });
-
 
 app.use('/auth', viewRoute);
 

@@ -1,7 +1,7 @@
-const express = require("express");
+const express = require('express');
 const viewRoute = express.Router();
 
-const viewController = require("../controllers/view.controller");
+const viewController = require('../controllers/view.controller');
 
 viewRoute.get('/login', viewController.loginPage);
 

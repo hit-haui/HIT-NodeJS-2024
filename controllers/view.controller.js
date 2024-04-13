@@ -1,9 +1,9 @@
 const loginPage = (req, res) => {
-    res.render('pages/login', {title: 'Login page'})
+  res.render('pages/login', { title: 'Login page' });
 };
 
 const registerPage = (req, res) => {
-    res.render('pages/register', {title: 'Register page'})
+  res.render('pages/register', { title: 'Register page' });
 };
 
-module.exports = {loginPage, registerPage }
+module.exports = { loginPage, registerPage };
