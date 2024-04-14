@@ -5,9 +5,6 @@ const httpStatus = require('http-status');
 const viewRoute = require('./routes/view.route');
 const userRoute = require('./routes/user.route');
 
-const viewRoute = require('./routes/view.route');
-const userRoute = require('./routes/user.route');
-
 const app = express();
 const port = process.env.PORT || 3000;
 
