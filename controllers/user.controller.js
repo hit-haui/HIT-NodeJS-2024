@@ -1,5 +1,4 @@
 const httpStatus = require('http-status');
-
 const User = require('../models/user.model');
 
 const createUser = (req, res) => {
@@ -27,7 +26,6 @@ const getUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   const { userId } = req.params;
-
   const user = User.findById(userId);
   if (!user) {
     res.status(httpStatus.NOT_FOUND).json({
