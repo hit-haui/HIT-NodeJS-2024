@@ -6,7 +6,7 @@ const createUser = (req, res) => {
   const users = User.create({ fullname, email, isLocked: false });
   res.json({
     message: 'Tạo mới người dùng thành',
-    code: httpStatus.OK,
+    code: httpStatus.CREATED,
     data: {
       users,
     },
