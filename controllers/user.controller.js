@@ -30,15 +30,23 @@ const createUser = async (req, res) => {
   }
 };
 
-const getUsers = (req, res) => {
-  const users = User.findAll();
-  res.json({
-    message: 'Lấy thành công mảng người dùng',
-    code: httpStatus.OK,
-    data: {
-      users,
-    },
-  });
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.json({
+      message: 'Lấy thành công mảng người dùng',
+      code: httpStatus.OK,
+      data: {
+        users: users,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
 };
 
 const getUserById = (req, res) => {
