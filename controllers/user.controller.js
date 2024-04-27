@@ -1,16 +1,33 @@
 const httpStatus = require('http-status');
 const User = require('../models/user.model');
 
-const createUser = (req, res) => {
-  const { fullname, email } = req.body;
-  const users = User.create({ fullname, email, isLocked: false });
-  res.status(httpStatus.CREATED).json({
-    message: 'Tạo mới người dùng thành',
-    code: httpStatus.CREATED,
-    data: {
-      users,
-    },
-  });
+const createUser = async (req, res) => {
+  try {
+    // tạo mới user đã tồn tại email
+    // password => hash (npm i brcrypt)
+    // password không được trả về kèm response
+    const { fullname, email, password } = req.body;
+    if (!fullname || !email || !password) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        message: 'Vui lòng điền đầy đủ thông tin',
+        code: httpStatus.BAD_REQUEST,
+      });
+    }
+    const user = await User.create({ fullname, email, password });
+    return res.status(httpStatus.CREATED).json({
+      message: 'Đã tạo người dùng thành công',
+      code: httpStatus.CREATED,
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
 };
 
 const getUsers = (req, res) => {
