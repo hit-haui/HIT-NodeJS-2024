@@ -4,16 +4,25 @@ const userController = require('../controllers/user.controller');
 
 const userRoute = express.Router();
 
-userRoute.post('/', userController.createUser);
+// userRoute.post('/', userController.createUser);
 
-userRoute.get('/', userController.getUsers);
+// userRoute.get('/', userController.getUsers);
 
-userRoute.get('/:userId', userController.getUserById);
+userRoute.route('/').post(userController.createUser).get(userController.getUsers);
 
-userRoute.put('/:userId', userController.updateUserById);
+userRoute
+  .route('/:userId')
+  .get(userController.getUserById)
+  .put(userController.updateUserById)
+  .options(userController.lockUserById)
+  .delete(userController.deleteUserById);
 
-userRoute.delete('/:userId', userController.deleteUserById);
+// userRoute.get('/:userId', userController.getUserById);
 
-userRoute.options('/:userId', userController.lockUserById);
+// userRoute.put('/:userId', userController.updateUserById);
+
+// userRoute.delete('/:userId', userController.deleteUserById);
+
+// userRoute.options('/:userId', userController.lockUserById);
 
 module.exports = userRoute;
