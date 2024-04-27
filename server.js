@@ -1,6 +1,7 @@
 require('dotenv').config();
 const morgan = require('morgan');
 const express = require('express');
+const mongoose = require('mongoose');
 const httpStatus = require('http-status');
 
 const viewRoute = require('./routes/view.route');
@@ -8,6 +9,7 @@ const userRoute = require('./routes/user.route');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/db-giang';
 
 app.use(express.json());
 app.set('views', './views');
@@ -27,6 +29,25 @@ app.all('*', (req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+mongoose
+  .connect(mongoURI)
+  .then(() => {
+    console.log('MongoDB connected');
+  })
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Example app listening on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+// (async () => {
+//   try {
+//     await mongoose.connect(mongoURI);
+//     console.log('MongoDB connected');
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })();
