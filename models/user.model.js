@@ -34,6 +34,7 @@ const create = (data) => {
 };
 
 const updateById = (id, body) => {
+  const users = getDataToJson();
   const index = users.findIndex((user) => user.id === id);
   if (index === -1) return null;
   users[index] = { ...users[index], ...body };
@@ -41,6 +42,7 @@ const updateById = (id, body) => {
 };
 
 const deleteById = (id) => {
+  const users = getDataToJson();
   const index = users.findIndex((user) => user.id === id);
   if (index === -1) return null;
   users.splice(index, 1);
@@ -48,6 +50,7 @@ const deleteById = (id) => {
 };
 
 const lockById = (id) => {
+  const users = getDataToJson();
   const index = users.findIndex((user) => user.id === id);
   if (index === -1) return null;
   users[index] = { ...users[index], isLocked: !users[index].isLocked };

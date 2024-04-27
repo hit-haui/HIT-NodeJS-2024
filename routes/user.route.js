@@ -4,16 +4,16 @@ const userController = require('../controllers/user.controller');
 
 const userRoute = express.Router();
 
-userRoute.post('/', userController.createUser);
+userRoute.post('/create', userController.createUser);
 
-userRoute.get('/', userController.getUsers);
+userRoute.get('/getusers', userController.getUsers);
 
 userRoute.get('/:userId', userController.getUserById);
 
-userRoute.put('/:userId', userController.updateUserById);
+userRoute.put('/updatebyid/:userId', userController.updateUserById);
 
-userRoute.delete('/:userId', userController.deleteUserById);
+userRoute.delete('/deletebyId/:userId', userController.deleteUserById);
 
-userRoute.options('/:userId', userController.lockUserById);
+userRoute.options('/lockuserbyId/:userId', userController.lockUserById);
 
 module.exports = userRoute;
