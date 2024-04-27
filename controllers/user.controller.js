@@ -49,23 +49,39 @@ const getUsers = async (req, res) => {
   }
 };
 
-const getUserById = (req, res) => {
+const getUserById = async (req, res) => {
   const { userId } = req.params;
-  const user = User.findById(userId);
-  if (!user) {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: `Không tìm thấy người dùng`,
-      code: httpStatus.NOT_FOUND,
+
+  if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
     });
   }
 
-  res.json({
-    message: `Lấy thông tin người dùng thành công`,
-    code: httpStatus.OK,
-    data: {
-      user,
-    },
-  });
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(httpStatus.NOT_FOUND).json({
+        message: `Không tìm thấy người dùng`,
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    res.json({
+      message: `Lấy thông tin người dùng thành công`,
+      code: httpStatus.OK,
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
 };
 
 const updateUserById = (req, res) => {
