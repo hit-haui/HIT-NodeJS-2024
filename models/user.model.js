@@ -1,70 +1,40 @@
-const fs = require('fs');
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+const mongoose = require('mongoose');
 
-const PATH_FILE_USERS = path.join(__dirname, '../database/users.json');
+const Schema = mongoose.Schema;
 
-const getDataToJson = () => {
-  const rawData = fs.readFileSync(PATH_FILE_USERS, 'utf8');
-  return JSON.parse(rawData);
-};
+const userSchema = new Schema(
+  {
+    fullname: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    email: {
+      type: String,
+      trim: true,
+      unique: true,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    dateOfBirth: {
+      type: Date,
+      default: '2000-01-01',
+    },
+    isLocked: {
+      type: Boolean,
+      default: false,
+    },
+    avatar: {
+      type: String,
+      default: 'https://th.bing.com/th/id/OIP.z3fa8PjEnvzg4bhW61tEOwAAAA?rs=1&pid=ImgDetMain',
+    },
+  },
+  { timestamps: true },
+);
 
-const saveDataToJson = (data) => {
-  fs.writeFileSync(PATH_FILE_USERS, JSON.stringify(data, null, 2));
-};
+const User = mongoose.model('User', userSchema);
 
-const findAll = () => {
-  const users = getDataToJson();
-  return users;
-};
-
-const findById = (id) => {
-  const users = getDataToJson();
-  return users.find((user) => user.id === id) || null;
-};
-
-const create = (data) => {
-  const users = getDataToJson();
-  users.push({
-    id: uuidv4(),
-    ...data,
-  });
-  saveDataToJson(users);
-  return users;
-};
-
-const updateById = (id, body) => {
-  const users = getDataToJson();
-  const index = users.findIndex((user) => user.id === id);
-  if (index === -1) return null;
-  users[index] = { ...users[index], ...body };
-  saveDataToJson(users);
-  return users;
-};
-
-const deleteById = (id) => {
-  const users = getDataToJson();
-  const index = users.findIndex((user) => user.id === id);
-  if (index === -1) return null;
-  users.splice(index, 1);
-  saveDataToJson(users);
-  return users;
-};
-
-const lockById = (id) => {
-  const users = getDataToJson();
-  const index = users.findIndex((user) => user.id === id);
-  if (index === -1) return null;
-  users[index] = { ...users[index], isLocked: !users[index].isLocked };
-  saveDataToJson(users);
-  return users[index];
-};
-
-module.exports = {
-  findAll,
-  findById,
-  create,
-  updateById,
-  deleteById,
-  lockById,
-};
+module.exports = User;
