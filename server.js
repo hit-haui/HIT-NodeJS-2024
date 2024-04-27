@@ -1,4 +1,5 @@
 require('dotenv').config();
+const morgan = require('morgan');
 const express = require('express');
 const httpStatus = require('http-status');
 
@@ -12,6 +13,8 @@ app.use(express.json());
 app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
+
+app.use(morgan('dev'));
 
 app.use('/auth', viewRoute);
 

@@ -4,9 +4,9 @@ const User = require('../models/user.model');
 const createUser = (req, res) => {
   const { fullname, email } = req.body;
   const users = User.create({ fullname, email, isLocked: false });
-  res.json({
+  res.status(httpStatus.CREATED).json({
     message: 'Tạo mới người dùng thành',
-    code: httpStatus.OK,
+    code: httpStatus.CREATED,
     data: {
       users,
     },
