@@ -34,23 +34,29 @@ const create = (data) => {
 };
 
 const updateById = (id, body) => {
+  const users = getDataToJson();
   const index = users.findIndex((user) => user.id === id);
   if (index === -1) return null;
   users[index] = { ...users[index], ...body };
+  saveDataToJson(users);
   return users;
 };
 
 const deleteById = (id) => {
+  const users = getDataToJson();
   const index = users.findIndex((user) => user.id === id);
   if (index === -1) return null;
   users.splice(index, 1);
+  saveDataToJson(users);
   return users;
 };
 
 const lockById = (id) => {
+  const users = getDataToJson();
   const index = users.findIndex((user) => user.id === id);
   if (index === -1) return null;
   users[index] = { ...users[index], isLocked: !users[index].isLocked };
+  saveDataToJson(users);
   return users[index];
 };
 
