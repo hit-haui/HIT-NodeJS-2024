@@ -157,22 +157,43 @@ const deleteUserById = async (req, res) => {
   }
 };
 
-const lockUserById = (req, res) => {
+const lockUserById = async (req, res) => {
   const { userId } = req.params;
-  const user = User.lockById(userId);
-  if (!user) {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: `Không tìm thấy người dùng`,
-      code: httpStatus.NOT_FOUND,
+
+  if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
     });
   }
-  res.json({
-    message: user.isLocked ? 'Khoá người dùng thành công' : 'Mở khoá người dùng thành công',
-    code: httpStatus.OK,
-    data: {
-      user,
-    },
-  });
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: `Không tìm thấy người dùng`,
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    user.isLocked = !user.isLocked;
+    await user.save();
+
+    res.json({
+      message: user.isLocked ? 'Khoá người dùng thành công' : 'Mở khoá người dùng thành công',
+      code: httpStatus.OK,
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
 };
 
 module.exports = {
