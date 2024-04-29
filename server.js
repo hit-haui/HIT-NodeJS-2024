@@ -10,6 +10,7 @@ const userRoute = require('./routes/user.route');
 const app = express();
 const port = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/db-Hang"
+// console.log(MONGO_URI);
 
 app.use(express.json());
 app.set('views', './views');
@@ -53,3 +54,4 @@ mongoose.connect(MONGO_URI)
 // app.listen(port, () => {
 //   console.log(`Example app listening on port ${port}`);
 // });
+
