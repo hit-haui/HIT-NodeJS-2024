@@ -3,16 +3,23 @@ const User = require('../models/user.model');
 
 const createUser = async (req, res) => {
   try {
-    // tạo mới user đã tồn tại email
-    // password => hash (npm i brcrypt)
-    // password không được trả về kèm response
     const { fullname, email, password } = req.body;
+
     if (!fullname || !email || !password) {
       return res.status(httpStatus.BAD_REQUEST).json({
         message: 'Vui lòng điền đầy đủ thông tin',
         code: httpStatus.BAD_REQUEST,
       });
     }
+
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(httpStatus.CONFLICT).json({
+        message: 'Email đã tồn tại. Vui lòng sử dụng email khác.',
+        code: httpStatus.CONFLICT,
+      });
+    }
+
     const user = await User.create({ fullname, email, password });
     return res.status(httpStatus.CREATED).json({
       message: 'Đã tạo người dùng thành công',
