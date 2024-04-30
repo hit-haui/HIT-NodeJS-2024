@@ -31,7 +31,7 @@ const createUser = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
@@ -50,7 +50,7 @@ const getUsers = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
@@ -85,7 +85,7 @@ const getUserById = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
@@ -122,7 +122,7 @@ const updateUserById = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
@@ -158,7 +158,7 @@ const deleteUserById = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
@@ -197,7 +197,7 @@ const lockUserById = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
