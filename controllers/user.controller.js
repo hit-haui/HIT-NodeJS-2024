@@ -15,6 +15,7 @@ const createUser = async (req, res) => {
         code: httpStatus.BAD_REQUEST,
       });
     }
+<<<<<<< HEAD
 
     //kiem tra email da ton tai hay chua
     const user = await User.findOne({ email });
@@ -40,6 +41,16 @@ const createUser = async (req, res) => {
         },
       });
     }
+=======
+    const user = await User.create({ fullname, email, password });
+    return res.status(httpStatus.CREATED).json({
+      message: 'Đã tạo người dùng thành công',
+      code: httpStatus.CREATED,
+      data: {
+        user,
+      },
+    });
+>>>>>>> cce3895b839e12105af31622b5ab626629b0d96a
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -51,7 +62,11 @@ const createUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
+<<<<<<< HEAD
     const users = await User.find({}).select("-password");
+=======
+    const users = await User.find({});
+>>>>>>> cce3895b839e12105af31622b5ab626629b0d96a
     res.json({
       message: 'Lấy thành công mảng người dùng',
       code: httpStatus.OK,
@@ -79,7 +94,11 @@ const getUserById = async (req, res) => {
   }
 
   try {
+<<<<<<< HEAD
     const user = await User.findById(userId).select("-password");
+=======
+    const user = await User.findById(userId);
+>>>>>>> cce3895b839e12105af31622b5ab626629b0d96a
     if (!user) {
       res.status(httpStatus.NOT_FOUND).json({
         message: `Không tìm thấy người dùng`,

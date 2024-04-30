@@ -18,8 +18,12 @@
     "express": "^4.19.1",
     "http-status": "^1.7.4",
     "mongoose": "^8.3.2",
+<<<<<<< HEAD
     "morgan": "^1.10.0",
     "uuid": "^9.0.1"
+=======
+    "morgan": "^1.10.0"
+>>>>>>> cce3895b839e12105af31622b5ab626629b0d96a
   },
   "devDependencies": {
     "nodemon": "^3.1.0",

@@ -9,7 +9,11 @@ const userRoute = require('./routes/user.route');
 
 const app = express();
 const port = process.env.PORT || 3000;
+<<<<<<< HEAD
 const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/db-Hang';
+=======
+const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/db-giang';
+>>>>>>> cce3895b839e12105af31622b5ab626629b0d96a
 
 app.use(express.json());
 app.set('views', './views');
@@ -42,3 +46,15 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+<<<<<<< HEAD
+=======
+
+// (async () => {
+//   try {
+//     await mongoose.connect(mongoURI);
+//     console.log('MongoDB connected');
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })();
+>>>>>>> cce3895b839e12105af31622b5ab626629b0d96a
