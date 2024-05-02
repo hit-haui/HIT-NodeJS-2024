@@ -165,22 +165,34 @@ const deleteUserById = async (req, res) => {
   }
 };
 
-const lockUserById = (req, res) => {
+const lockUserById = async (req, res) => {
   const { userId } = req.params;
-  const user = User.lockById(userId);
-  if (!user) {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: `Không tìm thấy người dùng`,
-      code: httpStatus.NOT_FOUND,
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: `Không tìm thấy người dùng`,
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+    user.isLocked = !user.isLocked;
+    await user.save();
+    user.password = undefined;
+    res.json({
+      message: user.isLocked ? 'Khoá người dùng thành công' : 'Mở khoá người dùng thành công',
+      code: httpStatus.OK,
+      data: {
+        user
+      },
     });
   }
-  res.json({
-    message: user.isLocked ? 'Khoá người dùng thành công' : 'Mở khoá người dùng thành công',
-    code: httpStatus.OK,
-    data: {
-      user,
-    },
-  });
+  catch (err) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: `Có lỗi xảy ra khi khóa user`,
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+      error: err.message,
+    });
+  }
 };
 
 module.exports = {
