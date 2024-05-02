@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const User = require('../models/user.model');
+const bcrypt = require('bcrypt');
 
 const createUser = async (req, res) => {
   try {
@@ -13,13 +14,31 @@ const createUser = async (req, res) => {
         code: httpStatus.BAD_REQUEST,
       });
     }
-    const user = await User.create({ fullname, email, password });
-    return res.status(httpStatus.CREATED).json({
-      message: 'Đã tạo người dùng thành công',
-      code: httpStatus.CREATED,
-      data: {
-        user,
-      },
+    const userFind = await User.findOne({ email: email });
+    if (userFind) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        message: 'Email đã tồn tại',
+        code: httpStatus.BAD_REQUEST,
+      });
+    }
+    bcrypt.hash(password, 10, async function (err, hashPassword) {
+      if (err) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+          message: 'Có lỗi khi mã hóa mật khẩu',
+          code: httpStatus.BAD_REQUEST,
+        });
+      }
+      else {
+        const user = await User.create({ fullname, email, password: hashPassword });
+        user.password = undefined;
+        return res.status(httpStatus.CREATED).json({
+          message: 'Đã tạo người dùng thành công',
+          code: httpStatus.CREATED,
+          data: {
+            user,
+          },
+        });
+      }
     });
   } catch (error) {
     console.log(error);
