@@ -51,7 +51,7 @@ const createUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find({}, { password: 0 });
     res.json({
       message: 'Lấy thành công mảng người dùng',
       code: httpStatus.OK,
@@ -79,15 +79,14 @@ const getUserById = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId, { password: 0 });
     if (!user) {
-      res.status(httpStatus.NOT_FOUND).json({
+      return res.status(httpStatus.NOT_FOUND).json({
         message: `Không tìm thấy người dùng`,
         code: httpStatus.NOT_FOUND,
       });
     }
-
-    res.json({
+    return res.json({
       message: `Lấy thông tin người dùng thành công`,
       code: httpStatus.OK,
       data: {
@@ -96,7 +95,7 @@ const getUserById = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'Đã sảy ra lỗi vui lòng thử lại',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
