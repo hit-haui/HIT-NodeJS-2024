@@ -137,22 +137,32 @@ const updateUserById = async (req, res) => {
   }
 };
 
-const deleteUserById = (req, res) => {
+const deleteUserById = async (req, res) => {
   const { userId } = req.params;
-  const users = User.deleteById(userId);
-  if (!users) {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: `Không tìm thấy người dùng`,
-      code: httpStatus.NOT_FOUND,
+  try {
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      res.status(httpStatus.NOT_FOUND).json({
+        message: `Không tìm thấy người dùng`,
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+    user.password = undefined;
+    res.json({
+      message: `Xoá người dùng thành công`,
+      code: httpStatus.OK,
+      data: {
+        user,
+      },
     });
   }
-  res.json({
-    message: `Xoá người dùng thành công`,
-    code: httpStatus.OK,
-    data: {
-      users,
-    },
-  });
+  catch (err) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: `Có lỗi xảy ra khi xóa user`,
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+      error: err.message,
+    });
+  }
 };
 
 const lockUserById = (req, res) => {
