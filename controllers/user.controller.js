@@ -102,23 +102,39 @@ const getUserById = async (req, res) => {
   }
 };
 
-const updateUserById = (req, res) => {
+const updateUserById = async (req, res) => {
   const { userId } = req.params;
-  const { fullname } = req.body;
-  const users = User.updateById(userId, { fullname });
-  if (!users) {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: `Không tìm thấy người dùng`,
-      code: httpStatus.NOT_FOUND,
+  const { fullname, dateOfBirth, isLocked, avatar } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: `Không tìm thấy người dùng`,
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+    user.set({
+      fullname,
+      dateOfBirth,
+      isLocked,
+      avatar
+    })
+    await user.save();
+    user.password = undefined;
+    return res.json({
+      message: `Cập nhật thông tin người dùng thành công`,
+      code: httpStatus.OK,
+      data: {
+        user,
+      },
+    })
+  } catch (err) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: `Có lỗi xảy ra khi cập nhật thông tin user`,
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+      error: err.message,
     });
   }
-  res.json({
-    message: `Cập nhật thông tin người dùng thành công`,
-    code: httpStatus.OK,
-    data: {
-      users,
-    },
-  });
 };
 
 const deleteUserById = (req, res) => {
