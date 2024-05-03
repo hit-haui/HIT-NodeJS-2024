@@ -1,5 +1,7 @@
 const httpStatus = require('http-status');
+const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
+const salt = bcrypt.genSaltSync(10);
 
 const createUser = async (req, res) => {
   try {
@@ -21,7 +23,9 @@ const createUser = async (req, res) => {
         code: httpStatus.CONFLICT,
       });
     }
-    const user = await User.create({ fullname, email, password });
+    const hashPassword = bcrypt.hashSync(password, salt);
+    console.log(hashPassword);
+    const user = await User.create({ fullname, email, password: hashPassword });
     return res.status(httpStatus.CREATED).json({
       message: 'Đã tạo người dùng thành công',
       code: httpStatus.CREATED,
