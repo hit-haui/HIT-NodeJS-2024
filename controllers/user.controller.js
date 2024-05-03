@@ -13,6 +13,14 @@ const createUser = async (req, res) => {
         code: httpStatus.BAD_REQUEST,
       });
     }
+    const userList = await User.find({});
+    let isEmailExists = !!(userList.find(user => user.email === email));
+    if(isEmailExists){
+      return res.status(httpStatus.CONFLICT).json({
+        message: 'Email đã tồn tại',
+        code: httpStatus.CONFLICT,
+      });
+    }
     const user = await User.create({ fullname, email, password });
     return res.status(httpStatus.CREATED).json({
       message: 'Đã tạo người dùng thành công',
