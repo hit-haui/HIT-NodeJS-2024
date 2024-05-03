@@ -13,7 +13,7 @@ const createUser = async (req, res) => {
       });
     }
     let isEmailExists = await User.findOne({ email: email });
-    if(isEmailExists){
+    if (isEmailExists) {
       return res.status(httpStatus.CONFLICT).json({
         message: 'Email đã tồn tại',
         code: httpStatus.CONFLICT,
@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
       message: 'Đã tạo người dùng thành công',
       code: httpStatus.CREATED,
       data: {
-        user: userWithoutPassword["_doc"],
+        user: userWithoutPassword['_doc'],
       },
     });
   } catch (error) {
@@ -164,7 +164,7 @@ const deleteUserById = async (req, res) => {
   }
 };
 
-const lockUserById = async(req, res) => {
+const lockUserById = async (req, res) => {
   const { userId } = req.params;
   if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
@@ -179,7 +179,7 @@ const lockUserById = async(req, res) => {
         message: `Không tìm thấy người dùng`,
         code: httpStatus.NOT_FOUND,
       });
-    }else{
+    } else {
       user.isLocked = !user.isLocked;
       await user.save();
       res.json({
