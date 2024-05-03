@@ -1,75 +1,83 @@
 const httpStatus = require('http-status');
+
 const User = require('../models/user.model');
 
 const createUser = async (req, res) => {
   try {
-    // tạo mới user đã tồn tại email
-    // password => hash (npm i brcrypt)
-    // password không được trả về kèm response
-    const { fullname, email, password } = req.body;
-    if (!fullname || !email || !password) {
+    const {fullname, email, password} = req.body;
+    if(!fullname || !email || !password){
       return res.status(httpStatus.BAD_REQUEST).json({
-        message: 'Vui lòng điền đầy đủ thông tin',
+        message: 'Vui lòng nhập đầy đủ thông tin',
         code: httpStatus.BAD_REQUEST,
       });
     }
-    const user = await User.create({ fullname, email, password });
+    const users = await User.create({fullname, email, password});
     return res.status(httpStatus.CREATED).json({
-      message: 'Đã tạo người dùng thành công',
+      message: 'Tạo mới người dùng thành công',
       code: httpStatus.CREATED,
       data: {
-        user,
+        users,
       },
     });
-  } catch (error) {
-    console.log(error);
+  }catch (error) {
+    console(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      message: 'Có lỗi xảy ra',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
 };
 
-const getUsers = async (req, res) => {
+const getUsers = async(req, res) => {
   try {
     const users = await User.find({});
-    res.json({
-      message: 'Lấy thành công mảng người dùng',
-      code: httpStatus.OK,
-      data: {
-        users: users,
-      },
-    });
-  } catch (error) {
+    
+  }catch(error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      message: 'Không tìm thấy người dùng',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
 };
 
-const getUserById = async (req, res) => {
+const getUserById = async(req, res) => {
   const { userId } = req.params;
-
-  if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      message: 'Vui lòng truyền đúng định dạng ObjectId',
-      code: httpStatus.BAD_REQUEST,
+  try {
+    const user = await User.find({});
+  }catch (err) {
+    console.log(err);
+    res.status(httpStatus.NOT_FOUND).json({
+      message: `Không tìm thấy người dùng`,
+      code: httpStatus.NOT_FOUND,
     });
   }
+  const user = User.findById(userId);
+  
 
+  res.json({
+    message: `Lấy thông tin người dùng thành công`,
+    code: httpStatus.OK,
+    data: {
+      user,
+    },
+  });
+};
+
+const updateUserById = async(req, res) => {
+  const { userId } = req.params;
+  const { fullname, dateOfBirth, isLocked, avatar } = req.body;
   try {
-    const user = await User.findById(userId);
+    const user = await User.findByIdAndUpdate(userId, { fullname } , {dateOfBirth} , {isLocked} , {avatar}, { new: true });
     if (!user) {
-      res.status(httpStatus.NOT_FOUND).json({
+      return res.status(httpStatus.NOT_FOUND).json({
         message: `Không tìm thấy người dùng`,
         code: httpStatus.NOT_FOUND,
       });
     }
 
     res.json({
-      message: `Lấy thông tin người dùng thành công`,
+      message: `Cập nhật thông tin người dùng thành công`,
       code: httpStatus.OK,
       data: {
         user,
@@ -84,59 +92,63 @@ const getUserById = async (req, res) => {
   }
 };
 
-const updateUserById = (req, res) => {
+const deleteUserById = async(req, res) => {
   const { userId } = req.params;
-  const { fullname } = req.body;
-  const users = User.updateById(userId, { fullname });
-  if (!users) {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: `Không tìm thấy người dùng`,
-      code: httpStatus.NOT_FOUND,
+  try {
+    const user = await User.findByIdAndDelete(userId);
+
+    if (!user) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: `Không tìm thấy người dùng`,
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    res.json({
+      message: `Xoá người dùng thành công`,
+      code: httpStatus.OK,
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-  res.json({
-    message: `Cập nhật thông tin người dùng thành công`,
-    code: httpStatus.OK,
-    data: {
-      users,
-    },
-  });
 };
 
-const deleteUserById = (req, res) => {
+const lockUserById = async (req, res) => {
   const { userId } = req.params;
-  const users = User.deleteById(userId);
-  if (!users) {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: `Không tìm thấy người dùng`,
-      code: httpStatus.NOT_FOUND,
-    });
-  }
-  res.json({
-    message: `Xoá người dùng thành công`,
-    code: httpStatus.OK,
-    data: {
-      users,
-    },
-  });
-};
+  try {
+    const user = await User.findById(userId);
 
-const lockUserById = (req, res) => {
-  const { userId } = req.params;
-  const user = User.lockById(userId);
-  if (!user) {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: `Không tìm thấy người dùng`,
-      code: httpStatus.NOT_FOUND,
+    if (!user) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: `Không tìm thấy người dùng`,
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    user.isLocked = !user.isLocked;
+    await user.save();
+
+    res.json({
+      message: user.isLocked ? 'Khoá người dùng thành công' : 'Mở khoá người dùng thành công',
+      code: httpStatus.OK,
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã sảy ra lỗi vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-  res.json({
-    message: user.isLocked ? 'Khoá người dùng thành công' : 'Mở khoá người dùng thành công',
-    code: httpStatus.OK,
-    data: {
-      user,
-    },
-  });
 };
 
 module.exports = {
