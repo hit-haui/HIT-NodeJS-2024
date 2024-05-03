@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 const Schema = mongoose.Schema;
 
-const SALT_WORK_FACTOR = 10;
+const { SALT_WORK_FACTOR } = require('../constants/constants');
 
 const userSchema = new Schema(
   {
