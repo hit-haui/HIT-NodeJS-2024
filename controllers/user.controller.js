@@ -5,9 +5,6 @@ const salt = bcrypt.genSaltSync(10);
 
 const createUser = async (req, res) => {
   try {
-    // tạo mới user đã tồn tại email
-    // password => hash (npm i brcrypt)
-    // password không được trả về kèm response
     const { fullname, email, password } = req.body;
     if (!fullname || !email || !password) {
       return res.status(httpStatus.BAD_REQUEST).json({
@@ -15,8 +12,7 @@ const createUser = async (req, res) => {
         code: httpStatus.BAD_REQUEST,
       });
     }
-    const userList = await User.find({});
-    let isEmailExists = !!(userList.find(user => user.email === email));
+    let isEmailExists = await User.findOne({ email: email });
     if(isEmailExists){
       return res.status(httpStatus.CONFLICT).json({
         message: 'Email đã tồn tại',
@@ -26,11 +22,12 @@ const createUser = async (req, res) => {
     const hashPassword = bcrypt.hashSync(password, salt);
     console.log(hashPassword);
     const user = await User.create({ fullname, email, password: hashPassword });
+    const { password: passwordField, ...userWithoutPassword } = user;
     return res.status(httpStatus.CREATED).json({
       message: 'Đã tạo người dùng thành công',
       code: httpStatus.CREATED,
       data: {
-        user,
+        user: userWithoutPassword["_doc"],
       },
     });
   } catch (error) {
