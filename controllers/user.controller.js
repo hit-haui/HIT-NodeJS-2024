@@ -93,7 +93,7 @@ const getUserById = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   const { userId } = req.params;
-  const { fullname } = req.body;
+  const update = req.body;
 
   if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
@@ -103,7 +103,7 @@ const updateUserById = async (req, res) => {
   }
 
   try {
-    const user = await User.findByIdAndUpdate(userId, { fullname }, { new: true });
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(httpStatus.NOT_FOUND).json({
@@ -111,6 +111,10 @@ const updateUserById = async (req, res) => {
         code: httpStatus.NOT_FOUND,
       });
     }
+
+    Object.assign(user, update);
+
+    await user.save();
 
     res.json({
       message: `Cập nhật thông tin người dùng thành công`,
