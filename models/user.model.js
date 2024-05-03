@@ -39,19 +39,14 @@ const userSchema = new Schema(
   { timestamps: true },
 );
 
-userSchema.pre('save', function (next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function (next) {
+  const user = this;
 
-  bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
-    if (err) return next(err);
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, SALT_WORK_FACTOR);
+  }
 
-    bcrypt.hash(this.password, salt, (err, hash) => {
-      if (err) return next(err);
-
-      this.password = hash;
-      next();
-    });
-  });
+  next();
 });
 
 const User = mongoose.model('User', userSchema);
