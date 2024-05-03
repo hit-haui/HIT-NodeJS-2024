@@ -93,7 +93,7 @@ const getUserById = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   const { userId } = req.params;
-  const update = req.body;
+  const updateBody = req.body;
 
   if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
@@ -112,7 +112,7 @@ const updateUserById = async (req, res) => {
       });
     }
 
-    Object.assign(user, update);
+    Object.assign(user, updateBody);
 
     await user.save();
 
