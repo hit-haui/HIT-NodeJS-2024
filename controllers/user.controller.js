@@ -4,9 +4,6 @@ const bcrypt = require('bcrypt');
 
 const createUser = async (req, res) => {
   try {
-    // tạo mới user đã tồn tại email
-    // password => hash (npm i brcrypt)
-    // password không được trả về kèm response
     const { fullname, email, password } = req.body;
     if (!fullname || !email || !password) {
       return res.status(httpStatus.BAD_REQUEST).json({
@@ -14,8 +11,8 @@ const createUser = async (req, res) => {
         code: httpStatus.BAD_REQUEST,
       });
     }
-    const exitUser = await User.findOne({ email: email });
-    if (exitUser) {
+    const existUser = await User.findOne({ email: email });
+    if (existUser) {
       return res.status(httpStatus.BAD_REQUEST).json({
         message: 'Email đã tồn tại',
         code: httpStatus.BAD_REQUEST,
