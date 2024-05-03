@@ -8,10 +8,7 @@ const userRoute = express.Router();
 
 // userRoute.get('/', userController.getUsers);
 
-userRoute
-  .route('/')
-  .post(userController.createUser)
-  .get(userController.getUsers);
+userRoute.route('/').post(userController.createUser).get(userController.getUsers);
 
 userRoute
   .route('/:userId')
