@@ -17,6 +17,7 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true,
+    select:false,  //mot cach khac de loai bo password ra khoi res
   },
   dateOfBirth: {
     type: Date,
