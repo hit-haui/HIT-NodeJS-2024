@@ -4,10 +4,6 @@ const userController = require('../controllers/user.controller');
 
 const userRoute = express.Router();
 
-// userRoute.post('/', userController.createUser);
-
-// userRoute.get('/', userController.getUsers);
-
 userRoute.route('/').post(userController.createUser).get(userController.getUsers);
 
 userRoute

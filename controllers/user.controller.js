@@ -16,6 +16,7 @@ const createUser = async (req, res) => {
       });
     }
 
+
     //kiem tra email da ton tai hay chua
     const user = await User.findOne({ email });
 
