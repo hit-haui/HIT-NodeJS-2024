@@ -105,9 +105,10 @@ const getUserById = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   const { userId } = req.params;
-  const { fullname } = req.body;
+  const { fullname, email, password,  } = req.body;
   try {
-    const users = await User.findByIdAndUpdate(userId, { fullname });
+    const hashPassword = bcrypt.hashSync(password, 10);
+    const users = await User.findByIdAndUpdate(userId, { fullname, email, password: hashPassword });
 
     if (!users) {
       res.status(httpStatus.NOT_FOUND).json({
