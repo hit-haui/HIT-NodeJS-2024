@@ -35,6 +35,11 @@ const userSchema = new Schema({
  {timestamps: true},
 );
 
+userSchema.pre('find', function (next) {
+  console.log("find user");
+  next();
+});
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
