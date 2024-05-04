@@ -2,11 +2,7 @@ const httpStatus = require('http-status');
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 
-const sanitizeUser = (user) => {
-  // Tạo một bản sao của đối tượng người dùng và loại trừ mật khẩu
-  const { password, ...safeUser } = user.toObject(); // Chuyển thành đối tượng và loại trừ mật khẩu
-  return safeUser;
-};
+
 
 const createUser = async (req, res) => {
   try {
@@ -34,14 +30,12 @@ const createUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const user = await User.create({'fullname' : fullname, 'email' : email, 'password': hashedPassword});
-
-    const sanitizedUser = sanitizeUser(user);
-
+    const { password: passwordField, ...userWithoutPassword } = user.toObject();
     return res.status(httpStatus.CREATED).json({
       message: 'Đã tạo người dùng thành công',
       code: httpStatus.CREATED,
       data: {
-        sanitizedUser,
+        userWithoutPassword,
       },
     });          
   } catch (error) {
@@ -91,13 +85,12 @@ const getUserById = async (req, res) => {
         code: httpStatus.NOT_FOUND,
       });
     }
-
-    const sanitizedUser = sanitizeUser(user);
+    const { password: passwordField, ...userWithoutPassword } = user.toObject();
     res.json({
       message: `Lấy thông tin người dùng thành công`,
       code: httpStatus.OK,
       data: {
-        sanitizedUser,
+        userWithoutPassword,
       },
     });
   } catch (error) {
@@ -140,12 +133,13 @@ const updateUserById = async (req, res) => {
       });
     }
     user.fullname = fullname;
-    const sanitizedUser = sanitizeUser(user);
+    await user.save();
+    const { password: passwordField, ...userWithoutPassword } = user.toObject();
     res.json({
       message: `Cập nhật thông tin người dùng thành công`,
       code: httpStatus.OK,
       data: {
-        sanitizedUser,
+        userWithoutPassword,
       },
     });
   }catch(error){
@@ -175,12 +169,12 @@ const deleteUserById = async (req, res) => {
         code: httpStatus.NOT_FOUND,
       });
     }
-    const sanitizedUser = sanitizeUser(user);
+    const { password: passwordField, ...userWithoutPassword } = user.toObject();
     res.json({
       message: `Xoá người dùng thành công`,
       code: httpStatus.OK,
       data: {
-        sanitizedUser,
+        userWithoutPassword,
       },
     });
   }catch(error){
@@ -213,12 +207,12 @@ const lockUserById = async (req, res) => {
 
     user.isLocked = !user.isLocked;
     await user.save();
-    const sanitizedUser = sanitizeUser(user);
+    const { password: passwordField, ...userWithoutPassword } = user.toObject();
     res.json({
       message: user.isLocked ? 'Khoá người dùng thành công' : 'Mở khoá người dùng thành công',
       code: httpStatus.OK,
       data: {
-        sanitizedUser,
+        userWithoutPassword,
       },
     });
   }catch(error){
