@@ -107,8 +107,10 @@ const updateUserById = async (req, res) => {
   const { userId } = req.params;
   const { fullname, email, password,  } = req.body;
   try {
-    const hashPassword = bcrypt.hashSync(password, 10);
-    const users = await User.findByIdAndUpdate(userId, { fullname, email, password: hashPassword });
+    // const hashPassword = bcrypt.hashSync(password, 10);
+    // const users = await User.findByIdAndUpdate(userId, { fullname, email, password: hashPassword });
+
+    const users = await User.findById(userId);
 
     if (!users) {
       res.status(httpStatus.NOT_FOUND).json({
@@ -117,7 +119,17 @@ const updateUserById = async (req, res) => {
       });
     }
 
+    const hashPassword = password ? bcrypt.hashSync(password, 10) : bcrypt.hashSync(users.password, 10);
+    let userUpdate = {
+      fullname: fullname ? fullname : users.fullname,
+      email: email ? email : users.email,
+      password: hashPassword,
+    }
+
+    await User.updateOne({ _id: userId }, userUpdate);
+
     const { password: _, ...user } = users.toObject();
+
     res.json({
       message: `Cập nhật thông tin người dùng thành công`,
       code: httpStatus.OK,
