@@ -27,12 +27,10 @@ const classSchema = new Schema(
     startDate: {
       type: Date,
       default: '2000-01-01',
-      required: true,
     },
     endDate: {
       type: Date,
       default: '2000-01-01',
-      required: true,
     },
     teacher: {
       type: Schema.Types.ObjectId,

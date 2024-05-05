@@ -6,6 +6,7 @@ const httpStatus = require('http-status');
 
 const viewRoute = require('./routes/view.route');
 const userRoute = require('./routes/user.route');
+const classRoute = require('./routes/class.route');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.use(morgan('dev'));
 app.use('/auth', viewRoute);
 
 app.use('/api/v1/users', userRoute);
+app.use('/api/v1/classes', classRoute);
 
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
@@ -42,12 +44,3 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
-// (async () => {
-//   try {
-//     await mongoose.connect(mongoURI);
-//     console.log('MongoDB connected');
-//   } catch (error) {
-//     console.log(error);
-//   }
-// })();
