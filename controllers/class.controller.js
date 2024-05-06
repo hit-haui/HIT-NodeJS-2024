@@ -45,7 +45,43 @@ const createClass = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã xảy ra lỗi vui thử được thử lại',
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+};
+
+const getClasses = async (req, res) => {
+  try {
+    const classes = await Class.find({}).populate([
+      {
+        path: 'teacher',
+        select: 'id fullname email avatar',
+      },
+      {
+        path: 'students',
+        select: 'id fullname email avatar',
+      },
+    ]);
+
+    if (!classes || classes.length === 0) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy lớp học nào',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    res.status(httpStatus.OK).json({
+      message: 'Lấy thành công các lớp học',
+      code: httpStatus.OK,
+      data: {
+        classes: classes,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
@@ -87,7 +123,7 @@ const getClassById = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã xảy ra lỗi vui thử được thử lại',
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
@@ -96,4 +132,5 @@ const getClassById = async (req, res) => {
 module.exports = {
   createClass,
   getClassById,
+  getClasses,
 };
