@@ -129,8 +129,49 @@ const getClassById = async (req, res) => {
   }
 };
 
+const updateClassById = async (req, res) => {
+  const { classId } = req.params;
+  const updateBody = req.body;
+
+  if (!checkIdMongo(classId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+
+  try {
+    const classroom = await Class.findById(classId).populate();
+    if (!classroom) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy lớp học',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    Object.assign(classroom, updateBody);
+
+    await classroom.save();
+
+    res.status(httpStatus.OK).json({
+      message: 'Cập nhật thông tin lớp học thành công',
+      code: httpStatus.OK,
+      data: {
+        class: classroom,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+};
+
 module.exports = {
   createClass,
   getClassById,
   getClasses,
+  updateClassById,
 };
