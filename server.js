@@ -10,7 +10,7 @@ const classRoute = require('./routes/class.route');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/db-giang';
+const mongoURI = process.env.MONGO_URI || 'mongodb+srv://test1:4fK6YbCCk00EKoJB@cluster0.els5fh1.mongodb.net/huy';
 
 app.use(express.json());
 app.set('views', './views');
