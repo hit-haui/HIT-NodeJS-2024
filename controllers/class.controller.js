@@ -64,18 +64,11 @@ const getClasses = async (req, res) => {
       },
     ]);
 
-    if (!classes || classes.length === 0) {
-      return res.status(httpStatus.NOT_FOUND).json({
-        message: 'Không tìm thấy lớp học nào',
-        code: httpStatus.NOT_FOUND,
-      });
-    }
-
     res.status(httpStatus.OK).json({
       message: 'Lấy thành công các lớp học',
       code: httpStatus.OK,
       data: {
-        classes: classes,
+        classes,
       },
     });
   } catch (error) {
@@ -141,7 +134,7 @@ const updateClassById = async (req, res) => {
   }
 
   try {
-    const classroom = await Class.findById(classId).populate();
+    const classroom = await Class.findById(classId);
     if (!classroom) {
       return res.status(httpStatus.NOT_FOUND).json({
         message: 'Không tìm thấy lớp học',
