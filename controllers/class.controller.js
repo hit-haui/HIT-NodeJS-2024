@@ -253,6 +253,53 @@ const joinClass = async (req, res) => {
   }
 };
 
+const leaveClass = async (req, res) => {
+  const { classId } = req.params;
+  const { studentId } = req.body;
+
+  if (!checkIdMongo(classId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+
+  try {
+    const classroom = await Class.findById(classId);
+    if (!classroom) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy lớp học',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    if (classroom.students?.includes(studentId)) {
+      classroom.students.remove(studentId);
+    } else {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Chưa tham gia lớp học này',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    await classroom.save();
+
+    res.status(httpStatus.OK).json({
+      message: 'Rời lớp học thành công',
+      code: httpStatus.OK,
+      class: {
+        classroom,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+};
+
 module.exports = {
   createClass,
   getClassById,
@@ -260,4 +307,5 @@ module.exports = {
   updateClassById,
   deleteClassById,
   joinClass,
+  leaveClass,
 };

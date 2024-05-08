@@ -14,4 +14,6 @@ classRoute
 
 classRoute.route('/:classId/join').post(classController.joinClass);
 
+classRoute.route('/:classId/leave').post(classController.leaveClass);
+
 module.exports = classRoute;
