@@ -6,7 +6,11 @@ const httpStatus = require('http-status');
 
 const viewRoute = require('./routes/view.route');
 const userRoute = require('./routes/user.route');
+<<<<<<< HEAD
 const classRoute = require("./routes/class.route");
+=======
+const classRoute = require('./routes/class.route');
+>>>>>>> e0fa4ecdaeb86e5684cb5e0bacea4e47f093ceeb
 
 // mongoose.set('debug', true)
 const app = express();
@@ -23,6 +27,7 @@ app.use(morgan('dev'));
 app.use('/auth', viewRoute);
 
 app.use('/api/v1/users', userRoute);
+app.use('/api/v1/classes', classRoute);
 
 app.use("/api/v1/classes", classRoute);
 
@@ -46,4 +51,7 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+<<<<<<< HEAD
 
+=======
+>>>>>>> e0fa4ecdaeb86e5684cb5e0bacea4e47f093ceeb
