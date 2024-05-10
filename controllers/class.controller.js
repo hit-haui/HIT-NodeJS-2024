@@ -51,6 +51,33 @@ const createClass = async (req, res) => {
   }
 };
 
+const getClasses = async(req, res) => {
+  try {
+    const classes = await Class.find({}).populate([{
+      path: 'teacher',
+      select: 'id fullname email avatar'
+    },
+    {
+      path: 'students',
+      select: 'id fullname email avatar'
+    }
+  ])
+    res.status(httpStatus.OK).json({
+      mesage: 'Lấy danh sách lớp học thành công',
+      code: httpStatus.OK,
+      data:{
+        classes
+      }
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã xảy ra sự cố, vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR
+    });
+  }
+}
+
 const getClassById = async (req, res) => {
   const { classId } = req.params;
 
@@ -66,7 +93,7 @@ const getClassById = async (req, res) => {
     const classroom = await Class.findById(classId).populate([
       {
         path: 'teacher',
-        select: '-avatar',
+        select: 'id, fullname, email, avatar',
       },
     ]);
 
@@ -95,5 +122,6 @@ const getClassById = async (req, res) => {
 
 module.exports = {
   createClass,
+  getClasses,
   getClassById,
 };
