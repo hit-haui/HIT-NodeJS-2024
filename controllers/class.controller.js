@@ -54,7 +54,7 @@ const createClass = async (req, res) => {
         });
     }
 
-}
+};
 
 const getClassById = async (req, res) => {
     const { classId } = req.params;
@@ -90,7 +90,7 @@ const getClassById = async (req, res) => {
             code: httpStatus.INTERNAL_SERVER_ERROR
         });
     }
-}
+};
 
 const getAllClass = async (req, res) => {
     try {
@@ -121,10 +121,10 @@ const getAllClass = async (req, res) => {
             code: httpStatus.INTERNAL_SERVER_ERROR
         });
     }
-}
+};
 
 const updateClassById = async (req, res) => {
-    const {classId} = req.params;
+    const { classId } = req.params;
     const { name, numberOfCredits, maxStudentQuantity, place, startDate, teacher, students } = req.body;
 
     try {
@@ -166,5 +166,40 @@ const updateClassById = async (req, res) => {
             code: httpStatus.INTERNAL_SERVER_ERROR
         });
     }
-}
-module.exports = { createClass, getClassById, getAllClass, updateClassById }
+};
+
+const deleteClassById = async (req, res) => {
+    const { classId } = req.params;
+
+    try {
+        const classroom = await Class.findById(classId);
+
+        if (!classroom) {
+            return res.status(httpStatus.NOT_FOUND).json({
+                message: "khong tim thay lop hoc!",
+                code: httpStatus.NOT_FOUND
+            });
+        }
+
+        await Class.findByIdAndDelete(classId);
+
+        res.json(
+            {
+                message: "Xoa lop hoc thanh cong!",
+                code: httpStatus.OK,
+                data: {
+                    classroom,
+                },
+            }
+        );
+
+    } catch (error) {
+        console.log(error);
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            message: "Da xay ra loi, vui long thu lai!",
+            code: httpStatus.INTERNAL_SERVER_ERROR
+        });
+    }
+};
+
+module.exports = { createClass, getClassById, getAllClass, updateClassById, deleteClassById }
