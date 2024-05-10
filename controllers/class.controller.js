@@ -202,4 +202,43 @@ const deleteClassById = async (req, res) => {
     }
 };
 
-module.exports = { createClass, getClassById, getAllClass, updateClassById, deleteClassById }
+const addStudentToClass = async (req, res) => {
+    const { classId } = req.params;
+    const { studentId} = req.body;
+
+    if (!studentId || !classId) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            message: "Ban can nhap day du studenId va classId!",
+            code: httpStatus.BAD_REQUEST
+        });
+    };
+
+    try {
+        const classroom = await Class.findById(classId);
+
+        if (!classroom) {
+            return res.status(httpStatus.NOT_FOUND).json({
+                message: "khong tim thay lop hoc!",
+                code: httpStatus.NOT_FOUND,
+            });
+        }
+
+        classroom.students.push(studentId);
+        await classroom.save();
+
+        return res.json({
+            message: "Them hoc sinh vao lop hoc thanh cong!",
+            code: httpStatus.OK,
+            data: {
+                classroom,
+            }
+        });
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
+            code: httpStatus.INTERNAL_SERVER_ERROR
+        });
+    }
+};
+
+module.exports = { createClass, getClassById, getAllClass, updateClassById, deleteClassById, addStudentToClass }

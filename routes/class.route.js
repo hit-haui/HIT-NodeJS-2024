@@ -6,5 +6,6 @@ const classRoute = express.Router();
 
 classRoute.route("/").post(classController.createClass).get(classController.getAllClass);
 classRoute.route("/:classId").get(classController.getClassById).put(classController.updateClassById).delete(classController.deleteClassById);
+classRoute.route("/:classId/join").post(classController.addStudentToClass);
 
 module.exports = classRoute;
