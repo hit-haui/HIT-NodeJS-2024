@@ -235,10 +235,50 @@ const addStudentToClass = async (req, res) => {
         });
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            message: error.message,
+            message: "Da xay ra loi, vui long thu lai!",
             code: httpStatus.INTERNAL_SERVER_ERROR
         });
     }
 };
 
-module.exports = { createClass, getClassById, getAllClass, updateClassById, deleteClassById, addStudentToClass }
+const removeStudentFromClass = async (req, res) => {
+    const { classId } = req.params;
+    const { studentId } = req.body;
+
+    if (!studentId || !classId) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            message: "Ban can nhap day du studenId va classId!",
+            code: httpStatus.BAD_REQUEST
+        });
+    };
+
+    try {
+        const classroom = await Class.findById(classId);
+
+        if (!classroom) {
+            return res.status(httpStatus.NOT_FOUND).json({
+                message: "khong tim thay lop hoc!",
+                code: httpStatus.NOT_FOUND,
+            });
+        }
+
+        classroom.students = classroom.students.filter(_id => _id.toString() !== studentId);
+        await classroom.save();
+
+        return res.json({
+            message: "Xoa hoc sinh tu lop hoc thanh cong!",
+            code: httpStatus.OK,
+            data: {
+                classroom,
+            }
+        });
+
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            message: "Da xay ra loi, vui long thu lai!",
+            code: httpStatus.INTERNAL_SERVER_ERROR
+        });
+    }
+}
+
+module.exports = { createClass, getClassById, getAllClass, updateClassById, deleteClassById, addStudentToClass, removeStudentFromClass }
