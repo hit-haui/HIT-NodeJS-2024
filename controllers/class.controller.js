@@ -67,16 +67,12 @@ const getClassById = async (req, res) => {
             }
         )
 
-
-
         if (!classroom) {
             return res.status(httpStatus.NOT_FOUND).json({
                 message: "khong tim thay lop hoc!",
                 code: httpStatus.NOT_FOUND
             });
         }
-
-
 
         res.status(httpStatus.OK).json({
             message: "Lay thong tin lop hoc thanh cong!",
@@ -127,4 +123,48 @@ const getAllClass = async (req, res) => {
     }
 }
 
-module.exports = { createClass, getClassById, getAllClass }
+const updateClassById = async (req, res) => {
+    const {classId} = req.params;
+    const { name, numberOfCredits, maxStudentQuantity, place, startDate, teacher, students } = req.body;
+
+    try {
+        const classroom = await Class.findById(classId);
+
+        if (!classroom) {
+            return res.status(httpStatus.NOT_FOUND).json({
+                message: "khong tim thay lop hoc!",
+                code: httpStatus.NOT_FOUND
+            });
+        }
+
+        let classUpdate = {
+            name: name ? name : classroom.name,
+            numberOfCredits: numberOfCredits ? numberOfCredits : classroom.numberOfCredits,
+            maxStudentQuantity: maxStudentQuantity ? maxStudentQuantity : classroom.maxStudentQuantity,
+            place: place ? place : classroom.place,
+            startDate: startDate ? startDate : classroom.startDate,
+            teacher: teacher ? teacher : classroom.teacher,
+            students: students ? students : classroom.students,
+        }
+
+        await Class.updateOne({ _id: classId }, classUpdate);
+
+        res.json(
+            {
+                message: "Cap nhat lop hoc thanh cong!",
+                code: httpStatus.OK,
+                data: {
+                    classroom,
+                },
+            }
+        );
+
+    } catch (error) {
+        console.log(error);
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            message: "Da xay ra loi, vui long thu lai!",
+            code: httpStatus.INTERNAL_SERVER_ERROR
+        });
+    }
+}
+module.exports = { createClass, getClassById, getAllClass, updateClassById }
