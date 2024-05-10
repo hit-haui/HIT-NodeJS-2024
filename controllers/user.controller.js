@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 
 const httpStatus = require('http-status');
 const User = require('../models/user.model');
+const {checkIdMongo} = require('../utils/check-Id-Mongo');
 
 const createUser = async (req, res) => {
   try {
@@ -72,7 +73,7 @@ const getUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   const { userId } = req.params;
 
-  if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
+  if (!checkIdMongo(userId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
       message: 'Vui lòng truyền đúng định dạng ObjectId',
       code: httpStatus.BAD_REQUEST,

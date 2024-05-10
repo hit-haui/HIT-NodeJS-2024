@@ -6,7 +6,9 @@ const httpStatus = require('http-status');
 
 const viewRoute = require('./routes/view.route');
 const userRoute = require('./routes/user.route');
+const classRoute = require("./routes/class.route");
 
+// mongoose.set('debug', true)
 const app = express();
 const port = process.env.PORT || 3000;
 const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/db-Hang';
@@ -21,6 +23,8 @@ app.use(morgan('dev'));
 app.use('/auth', viewRoute);
 
 app.use('/api/v1/users', userRoute);
+
+app.use("/api/v1/classes", classRoute);
 
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
