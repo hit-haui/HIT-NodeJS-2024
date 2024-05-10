@@ -38,18 +38,8 @@ const userSchema = new Schema({
  {timestamps: true},
 );
 
-<<<<<<< HEAD
 userSchema.pre('find', function (next) {
   console.log("find user");
-=======
-userSchema.pre('save', async function (next) {
-  const user = this;
-
-  if (user.isModified('password')) {
-    user.password = await bcrypt.hash(user.password, SALT_WORK_FACTOR);
-  }
-
->>>>>>> e0fa4ecdaeb86e5684cb5e0bacea4e47f093ceeb
   next();
 });
 
