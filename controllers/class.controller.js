@@ -223,10 +223,17 @@ const addStudentToClass = async (req, res) => {
             });
         }
 
+        if (classroom.students.includes(studentId)) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                message: "Hoc sinh nay da ton tai trong lop!",
+                code: httpStatus.BAD_REQUEST,
+            });
+        }
+
         classroom.students.push(studentId);
         await classroom.save();
 
-        return res.json({
+        res.json({
             message: "Them hoc sinh vao lop hoc thanh cong!",
             code: httpStatus.OK,
             data: {
@@ -265,7 +272,7 @@ const removeStudentFromClass = async (req, res) => {
         classroom.students = classroom.students.filter(_id => _id.toString() !== studentId);
         await classroom.save();
 
-        return res.json({
+        res.json({
             message: "Xoa hoc sinh tu lop hoc thanh cong!",
             code: httpStatus.OK,
             data: {
