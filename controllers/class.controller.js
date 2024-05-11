@@ -171,22 +171,9 @@ const deleteClassById = async (req, res) => {
         code: httpStatus.NOT_FOUND,
       });
     }
-    const classes = await Class.find({}).populate([
-      {
-        path: 'teacher',
-        select: 'id fullname email avatar',
-      },
-      {
-        path: 'students',
-        select: 'id fullname email avatar',
-      },
-    ]);
     res.status(httpStatus.OK).json({
       message: 'Xóa lớp học thành công',
       code: httpStatus.OK,
-      data: {
-        classes,
-      },
     });
   } catch (error) {
     console.log(error);
