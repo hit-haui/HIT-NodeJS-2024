@@ -4,7 +4,7 @@ const classController = require('../controllers/class.controller');
 
 const classRoute = express.Router();
 
-classRoute.route('/').post(classController.createClass);
+classRoute.route('/').post(classController.createClass).get(classController.getAllClass);
 
 classRoute.route('/:classId').get(classController.getClassById).post(classController.updateClassById);
 
