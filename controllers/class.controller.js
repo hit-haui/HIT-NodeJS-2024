@@ -51,32 +51,33 @@ const createClass = async (req, res) => {
   }
 };
 
-const getClasses = async(req, res) => {
+const getClasses = async (req, res) => {
   try {
-    const classes = await Class.find({}).populate([{
-      path: 'teacher',
-      select: 'id fullname email avatar'
-    },
-    {
-      path: 'students',
-      select: 'id fullname email avatar'
-    }
-  ])
+    const classes = await Class.find({}).populate([
+      {
+        path: 'teacher',
+        select: 'id fullname email avatar',
+      },
+      {
+        path: 'students',
+        select: 'id fullname email avatar',
+      },
+    ]);
     res.status(httpStatus.OK).json({
       mesage: 'Lấy danh sách lớp học thành công',
       code: httpStatus.OK,
-      data:{
-        classes
-      }
-    })
+      data: {
+        classes,
+      },
+    });
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'Đã xảy ra sự cố, vui lòng thử lại',
-      code: httpStatus.INTERNAL_SERVER_ERROR
+      code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-}
+};
 
 const getClassById = async (req, res) => {
   const { classId } = req.params;
@@ -120,33 +121,31 @@ const getClassById = async (req, res) => {
   }
 };
 
-const updateClassById = async(req, res) => {
-  const {classId} = req.params;
+const updateClassById = async (req, res) => {
+  const { classId } = req.params;
   const updateBody = req.body;
-  if(!checkIdMongo(classId))
-  {
+  if (!checkIdMongo(classId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
       message: 'Vui lòng truyền đúng định dạng ObjectId',
       code: httpStatus.BAD_REQUEST,
-    })
+    });
   }
 
   try {
     const classroom = await Class.findByIdAndUpdate(classId, updateBody);
-    if(!classroom){
+    if (!classroom) {
       return res.status(httpStatus.NOT_FOUND).json({
         message: 'Không tìm thấy lớp học',
         code: httpStatus.NOT_FOUND,
-      })
+      });
     }
     res.status(httpStatus.OK).json({
-      message: "Cập nhập lớp học thành công",
+      message: 'Cập nhập lớp học thành công',
       code: httpStatus.OK,
       data: {
-        classroom
-      }
-    })
-
+        classroom,
+      },
+    });
   } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -154,11 +153,54 @@ const updateClassById = async(req, res) => {
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-}
+};
+
+const deleteClassById = async (req, res) => {
+  const { classId } = req.params;
+  if (!checkIdMongo(classId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+  try {
+    const classroom = await Class.findByIdAndDelete(classId);
+    if (!classroom) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy lớp học',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+    const classes = await Class.find({}).populate([
+      {
+        path: 'teacher',
+        select: 'id fullname email avatar',
+      },
+      {
+        path: 'students',
+        select: 'id fullname email avatar',
+      },
+    ]);
+    res.status(httpStatus.OK).json({
+      message: 'Xóa lớp học thành công',
+      code: httpStatus.OK,
+      data: {
+        classes,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã xảy ra lỗi vui thử được thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+};
 
 module.exports = {
   createClass,
   getClasses,
   getClassById,
-  updateClassById
+  updateClassById,
+  deleteClassById,
 };
