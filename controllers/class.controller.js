@@ -207,10 +207,60 @@ const deleteClassById = async (req, res) => {
   }
 }
 
+const joinClass = async (req, res) => {
+  const {classId} = req.params;
+  const {studentId} = req.body;
+
+  if(!checkIdMongo(classId) ){
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+
+  try{
+    const classroom = await Class.findById(classId);
+
+    if(!classroom){
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: "Không tim thấy lớp học",
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    if(!classroom.students?.includes(studentId)){
+      classroom.students.push(studentId);
+    }else{
+      return res.status(httpStatus.CONFLICT).json({
+        message: "Đã tồn tại trong lớp học",
+        code: httpStatus.CONFLICT,
+      });
+    }
+
+    await classroom.save();
+
+    return res.status(httpStatus.OK).json({
+      message: "Tham gia thành công",
+      code: httpStatus.OK,
+      data:{
+        classroom,
+      }
+    });
+
+  }catch(error){
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    message: 'Đã xảy ra lỗi vui lòng thử lại',
+    code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
 module.exports = {
   createClass,
   getClassById,
   getAllClass,
   updateClassById,
   deleteClassById,
+  joinClass,
 };

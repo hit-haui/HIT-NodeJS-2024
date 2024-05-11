@@ -8,4 +8,6 @@ classRoute.route('/').post(classController.createClass).get(classController.getA
 
 classRoute.route('/:classId').get(classController.getClassById).post(classController.updateClassById).delete(classController.deleteClassById);
 
+classRoute.route('/:classId/join').post(classController.joinClass);
+
 module.exports = classRoute;
