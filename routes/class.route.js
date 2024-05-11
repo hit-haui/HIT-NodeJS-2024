@@ -6,9 +6,10 @@ const classRoute = express.Router();
 
 classRoute.route('/')
     .get(classController.getClasses)
-    .post(classController.createClass);
+    .post(classController.createClass)
 
 classRoute.route('/:classId')
-    .get(classController.getClassById);
+    .get(classController.getClassById)
+    .put(classController.updateClassById)
 
 module.exports = classRoute;
