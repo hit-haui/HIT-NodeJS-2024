@@ -197,9 +197,9 @@ const deleteClassById = async (req, res) => {
   }
 };
 
-const joinClassById = async(req, res) => {
-  const {classId} = req.params;
-  const {studentId} = req.body;
+const joinClassById = async (req, res) => {
+  const { classId } = req.params;
+  const { studentId } = req.body;
   if (!checkIdMongo(classId) || !checkIdMongo(studentId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
       message: 'Vui lòng truyền đúng định dạng ObjectId',
@@ -227,8 +227,7 @@ const joinClassById = async(req, res) => {
         code: httpStatus.CONFLICT,
       });
     }
-    if(classroom.students.find(objectId => objectId.toString() === studentId))
-    {
+    if (classroom.students.find((objectId) => objectId.toString() === studentId)) {
       return res.status(httpStatus.CONFLICT).json({
         message: 'Sinh viên đã đăng ký lớp học',
         code: httpStatus.CONFLICT,
@@ -236,8 +235,8 @@ const joinClassById = async(req, res) => {
     }
     const classUpdate = {
       ...classroom,
-      students: [...classroom.students, student._id]
-    } 
+      students: [...classroom.students, student._id],
+    };
 
     Object.assign(classroom, classUpdate);
 
@@ -257,11 +256,11 @@ const joinClassById = async(req, res) => {
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-}
+};
 
-const leaveClassById = async(req, res) => {
-  const {classId} = req.params;
-  const {studentId} = req.body;
+const leaveClassById = async (req, res) => {
+  const { classId } = req.params;
+  const { studentId } = req.body;
   if (!checkIdMongo(classId) || !checkIdMongo(studentId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
       message: 'Vui lòng truyền đúng định dạng ObjectId',
@@ -276,8 +275,7 @@ const leaveClassById = async(req, res) => {
         code: httpStatus.NOT_FOUND,
       });
     }
-    if(!classroom.students.find(objectId => objectId.toString() === studentId))
-    {
+    if (!classroom.students.find((objectId) => objectId.toString() === studentId)) {
       return res.status(httpStatus.NOT_FOUND).json({
         message: 'Sinh viên này không tồn tại trong lớp học',
         code: httpStatus.NOT_FOUND,
@@ -285,8 +283,8 @@ const leaveClassById = async(req, res) => {
     }
     const classDelete = {
       ...classroom,
-      students: classroom.students.filter(objectId => objectId.toString() !== studentId)
-    } 
+      students: classroom.students.filter((objectId) => objectId.toString() !== studentId),
+    };
 
     Object.assign(classroom, classDelete);
 
@@ -306,7 +304,7 @@ const leaveClassById = async(req, res) => {
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-}
+};
 
 module.exports = {
   createClass,
@@ -315,5 +313,5 @@ module.exports = {
   updateClassById,
   deleteClassById,
   joinClassById,
-  leaveClassById
+  leaveClassById,
 };

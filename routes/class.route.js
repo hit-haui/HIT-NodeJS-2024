@@ -12,12 +12,8 @@ classRoute
   .put(classController.updateClassById)
   .delete(classController.deleteClassById);
 
-classRoute
-    .route('/:classId/join')
-    .post(classController.joinClassById)
+classRoute.route('/:classId/join').post(classController.joinClassById);
 
-classRoute
-    .route('/:classId/leave')
-    .post(classController.leaveClassById)
+classRoute.route('/:classId/leave').post(classController.leaveClassById);
 
 module.exports = classRoute;
