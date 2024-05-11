@@ -10,4 +10,6 @@ classRoute.route('/:classId').get(classController.getClassById).post(classContro
 
 classRoute.route('/:classId/join').post(classController.joinClass);
 
+classRoute.route('/:classId/leave').delete(classController.leaveClass);
+
 module.exports = classRoute;
