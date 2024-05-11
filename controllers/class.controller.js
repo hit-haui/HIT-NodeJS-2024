@@ -259,11 +259,61 @@ const joinClassById = async(req, res) => {
   }
 }
 
+const leaveClassById = async(req, res) => {
+  const {classId} = req.params;
+  const {studentId} = req.body;
+  if (!checkIdMongo(classId) || !checkIdMongo(studentId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+  try {
+    const classroom = await Class.findById(classId);
+    if (!classroom) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy lớp học',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+    if(!classroom.students.find(objectId => objectId.toString() === studentId))
+    {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Sinh viên này không tồn tại trong lớp học',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+    const classDelete = {
+      ...classroom,
+      students: classroom.students.filter(objectId => objectId.toString() !== studentId)
+    } 
+
+    Object.assign(classroom, classDelete);
+
+    await classroom.save();
+
+    res.status(httpStatus.OK).json({
+      message: 'Xóa sinh viên ra khỏi lớp học thành công',
+      code: httpStatus.OK,
+      data: {
+        classroom,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã xảy ra lỗi vui thử được thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
 module.exports = {
   createClass,
   getClasses,
   getClassById,
   updateClassById,
   deleteClassById,
-  joinClassById
+  joinClassById,
+  leaveClassById
 };
