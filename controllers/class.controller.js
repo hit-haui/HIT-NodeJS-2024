@@ -98,6 +98,13 @@ const updateClassById = async (req, res) => {
 
   const updateBody = req.body;
 
+  if (JSON.stringify(updateBody) == '{}') {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui điền đầy đủ thông tin',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+
   if (!checkIdMongo(classId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
       message: 'Vui lòng truyền đúng định dạng ObjectId',
