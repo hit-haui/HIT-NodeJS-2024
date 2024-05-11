@@ -197,10 +197,73 @@ const deleteClassById = async (req, res) => {
   }
 };
 
+const joinClassById = async(req, res) => {
+  const {classId} = req.params;
+  const {studentId} = req.body;
+  if (!checkIdMongo(classId) || !checkIdMongo(studentId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+  try {
+    const classroom = await Class.findById(classId);
+    if (!classroom) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy lớp học',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+    const student = await User.findById(studentId);
+    if (!student) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy sinh viên này',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+    if (student._id === classroom.teacher._id) {
+      return res.status(httpStatus.CONFLICT).json({
+        message: 'Đây là giáo viên đang giảng dạy lớp học',
+        code: httpStatus.CONFLICT,
+      });
+    }
+    if(classroom.students.find(objectId => objectId.toString() === studentId))
+    {
+      return res.status(httpStatus.CONFLICT).json({
+        message: 'Sinh viên đã đăng ký lớp học',
+        code: httpStatus.CONFLICT,
+      });
+    }
+    const classUpdate = {
+      ...classroom,
+      students: [...classroom.students, student._id]
+    } 
+
+    Object.assign(classroom, classUpdate);
+
+    await classroom.save();
+
+    res.status(httpStatus.OK).json({
+      message: 'Thêm sinh viên vào lớp học thành công',
+      code: httpStatus.OK,
+      data: {
+        classroom,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã xảy ra lỗi vui thử được thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
 module.exports = {
   createClass,
   getClasses,
   getClassById,
   updateClassById,
   deleteClassById,
+  joinClassById
 };
