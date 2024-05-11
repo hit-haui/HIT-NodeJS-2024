@@ -171,9 +171,46 @@ const updateClassById = async (req, res) => {
   }
 }
 
+const deleteClassById = async (req, res) => {
+  const {classId} = req.params;
+
+  if (!checkIdMongo(classId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }  
+
+  try{
+    const classDel = await Class.findByIdAndDelete(classId);
+
+    if(!classDel){
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: "Không tim thấy lớp học",
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      message: 'Xóa lớp thành công',
+      code: httpStatus.OK,
+      data: {
+        classDel,
+      }
+    });
+
+  }catch(error){
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: "Đã xảy ra lỗi",
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
 module.exports = {
   createClass,
   getClassById,
   getAllClass,
   updateClassById,
+  deleteClassById,
 };
