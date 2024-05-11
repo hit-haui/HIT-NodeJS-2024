@@ -76,6 +76,170 @@ const createClass = async (req, res) => {
   }
 };
 
+const updateClassById = async (req, res) => {
+  const { classId } = req.params;
+
+  if (!checkIdMongo(classId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+
+  try {
+    const classroom = await Class.findById(classId);
+    if (!classroom) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy lớp học',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    await Class.updateOne({ _id: classId }, req.body);
+    Object.assign(classroom, req.body);
+
+    res.status(httpStatus.OK).json({
+      message: 'Update thông tin lớp học thành công',
+      code: httpStatus.OK,
+      class: classroom
+    });
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const deleteClassById = async (req, res) => {
+  const { classId } = req.params;
+
+  if (!checkIdMongo(classId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+
+  try {
+    const classroom = await Class.findById(classId);
+    if (!classroom) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy lớp học',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+
+    await Class.deleteOne({ _id: classId });
+
+    res.status(httpStatus.OK).json({
+      message: 'Xóa lớp học thành công',
+      code: httpStatus.OK,
+      class: classroom
+    });
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const joinClass = async (req, res) => {
+  const { classId } = req.params;
+
+  if (!checkIdMongo(classId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+
+  try {
+    const classroom = await Class.findById(classId);
+    if (!classroom) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy lớp học',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+    const { studentId } = req.body;
+    if (!checkIdMongo(studentId)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        message: 'Vui lòng truyền đúng định dạng ObjectId',
+        code: httpStatus.BAD_REQUEST,
+      });
+    }
+    const student = await User.findById(studentId);
+    if (!!student) {
+      classroom.students = [...classroom.students, student];
+      await classroom.save();
+
+      return res.status(httpStatus.OK).json({
+        message: 'Thêm vào lớp thành công',
+        code: httpStatus.OK,
+        data: classroom
+      });
+    }
+    else {
+      res.status(httpStatus.BAD_REQUEST).json({
+        message: 'Thêm không thành công',
+        code: httpStatus.BAD_REQUEST,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã xảy ra lỗi vui thử được thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
+const leaveClass = async (req, res) => {
+  const { classId } = req.params;
+
+  if (!checkIdMongo(classId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: 'Vui lòng truyền đúng định dạng ObjectId',
+      code: httpStatus.BAD_REQUEST,
+    });
+  }
+
+  try {
+    const classroom = await Class.findById(classId);
+    if (!classroom) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        message: 'Không tìm thấy lớp học',
+        code: httpStatus.NOT_FOUND,
+      });
+    }
+    const { studentId } = req.body;
+    if (!checkIdMongo(studentId)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        message: 'Vui lòng truyền đúng định dạng ObjectId',
+        code: httpStatus.BAD_REQUEST,
+      });
+    }
+    const student = await User.findById(studentId);
+    if (!!student) {
+      classroom.students.includes(studentId) ?
+        classroom.students.remove(studentId)
+        :
+        res.status(httpStatus.BAD_REQUEST).json({
+          message: 'Sinh viên không có trong lớp học',
+          code: httpStatus.BAD_REQUEST,
+        });
+      await classroom.save();
+      return res.status(httpStatus.OK).json({
+        message: 'Xóa khỏi lớp thành công',
+        code: httpStatus.OK,
+        data: classroom
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Đã xảy ra lỗi vui thử được thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
 const getClassById = async (req, res) => {
   const { classId } = req.params;
 
@@ -122,4 +286,8 @@ module.exports = {
   getClasses,
   createClass,
   getClassById,
+  updateClassById,
+  deleteClassById,
+  joinClass,
+  leaveClass,
 };
