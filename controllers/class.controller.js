@@ -4,6 +4,31 @@ const User = require('../models/user.model');
 const Class = require('../models/class.model');
 const checkIdMongo = require('../utils/check-id-mongo');
 
+const getClasses = async (req, res) => {
+  try {
+    const classes = await Class.find({}).populate([
+      {
+        path: 'teacher',
+        select: 'id fullname email avatar',
+      },
+      {
+        path: 'students',
+        select: 'id fullname email avatar',
+      }
+    ]);
+    return res.status(httpStatus.OK).json({
+      message: 'Lấy danh sách các lớp thành công',
+      code: httpStatus.OK,
+      data: classes
+    });
+  } catch (err) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: `Có lỗi xảy ra ${err}`,
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
+
 const createClass = async (req, res) => {
   const createBody = req.body;
 
@@ -94,6 +119,7 @@ const getClassById = async (req, res) => {
 };
 
 module.exports = {
+  getClasses,
   createClass,
   getClassById,
 };
