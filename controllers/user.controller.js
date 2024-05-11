@@ -40,13 +40,32 @@ const createUser = async (req, res) => {
 };
 
 const getUsers = async (req, res) => {
+
+  const { limit = 10, page = 1, sortBy = 'createdAt : desc, fullname: desc' } = req.query;
+
+  const skip = (+page - 1) * +limit;
+
+  const [field, value] = sortBy.split(':');
+  const sort = { [field]: value === 'asc' ? 1 : -1 };
+
+
+
   try {
-    const users = await User.find({});
+    const query = {};
+
+    const users = await User.find().limit(limit).skip(skip).sort(sort);
+
+    const totalResults = await User.countDocuments(query);
+
     res.json({
       message: 'Lấy thành công mảng người dùng',
       code: httpStatus.OK,
       data: {
-        users: users,
+        users,
+        limit: +limit,
+        currentPage: +page,
+        totalPage: Math.ceil(totalResults / +limit),
+        totalResults,
       },
     });
   } catch (error) {
