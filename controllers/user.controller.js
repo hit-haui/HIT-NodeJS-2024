@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 
 const User = require('../models/user.model');
+const ApiError = require('../utils/ApiError');
 const checkIdMongo = require('../utils/check-id-mongo');
 
 const createUser = async (req, res) => {
@@ -58,17 +59,13 @@ const getUsers = async (req, res) => {
   }
 };
 
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
   const { userId } = req.params;
-
-  if (!checkIdMongo(userId)) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      message: 'Vui lòng truyền đúng định dạng ObjectId',
-      code: httpStatus.BAD_REQUEST,
-    });
-  }
-
   try {
+    if (!checkIdMongo(userId)) {
+      throw new ApiError('Vui lòng truyền đúng định dạng ObjectId');
+    }
+
     const user = await User.findById(userId);
     if (!user) {
       res.status(httpStatus.NOT_FOUND).json({
@@ -85,11 +82,7 @@ const getUserById = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã xảy ra lỗi vui lòng thử lại',
-      code: httpStatus.INTERNAL_SERVER_ERROR,
-    });
+    next(error);
   }
 };
 

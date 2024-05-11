@@ -7,6 +7,7 @@ const httpStatus = require('http-status');
 const viewRoute = require('./routes/view.route');
 const userRoute = require('./routes/user.route');
 const classRoute = require('./routes/class.route');
+const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,6 +31,8 @@ app.all('*', (req, res) => {
     code: httpStatus.NOT_FOUND,
   });
 });
+
+app.use(errorHandler);
 
 mongoose
   .connect(mongoURI)
