@@ -27,7 +27,7 @@ app.use((req, res, next) => {
   countAccess++;
   console.log('so luot truy cap:', countAccess);
   next();
-})
+});
 
 app.use('/auth', viewRoute);
 

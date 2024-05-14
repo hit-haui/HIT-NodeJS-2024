@@ -73,7 +73,6 @@ const getClassById = async (req, res, next) => {
 };
 
 const getAllClass = async (req, res, next) => {
-
   const { limit = 10, page = 1, sortBy = 'startDate: aesc, name : aesc' } = req.body;
 
   const skip = (+page - 1) * +limit;
@@ -84,16 +83,20 @@ const getAllClass = async (req, res, next) => {
   try {
     const query = {};
 
-    const classes = await Class.find().limit(limit).skip(skip).sort(sort).populate([
-      {
-        path: 'teacher',
-        select: 'id fullname email avatar'
-      },
-      {
-        path: 'students',
-        select: 'id fullname email avatar'
-      }
-    ]);
+    const classes = await Class.find()
+      .limit(limit)
+      .skip(skip)
+      .sort(sort)
+      .populate([
+        {
+          path: 'teacher',
+          select: 'id fullname email avatar',
+        },
+        {
+          path: 'students',
+          select: 'id fullname email avatar',
+        },
+      ]);
 
     const totalResults = await Class.countDocuments(query);
 
@@ -112,7 +115,7 @@ const getAllClass = async (req, res, next) => {
     console.log(error);
     next(error);
   }
-}
+};
 
 const updateClassById = async (req, res, next) => {
   const { classId } = req.params;
@@ -145,12 +148,11 @@ const updateClassById = async (req, res, next) => {
         classroom,
       },
     });
-
   } catch (error) {
     console.log(error);
     next(error);
   }
-}
+};
 
 const deleteClassById = async (req, res, next) => {
   const { classId } = req.params;
@@ -163,7 +165,7 @@ const deleteClassById = async (req, res, next) => {
     const classDel = await Class.findByIdAndDelete(classId);
 
     if (!classDel) {
-      throw new ApiError(httpStatus.NOT_FOUND, "Không tim thấy lớp học");
+      throw new ApiError(httpStatus.NOT_FOUND, 'Không tim thấy lớp học');
     }
 
     return res.status(httpStatus.OK).json({
@@ -171,13 +173,12 @@ const deleteClassById = async (req, res, next) => {
       code: httpStatus.OK,
       data: {
         classDel,
-      }
+      },
     });
-
   } catch (error) {
     next(error);
   }
-}
+};
 
 const joinClass = async (req, res, next) => {
   const { classId } = req.params;
@@ -191,30 +192,29 @@ const joinClass = async (req, res, next) => {
     const classroom = await Class.findById(classId);
 
     if (!classroom) {
-      throw new ApiError(httpStatus.NOT_FOUND, "Không tim thấy lớp học");
+      throw new ApiError(httpStatus.NOT_FOUND, 'Không tim thấy lớp học');
     }
 
     if (!classroom.students?.includes(studentId)) {
       classroom.students.push(studentId);
     } else {
-      throw new ApiError(httpStatus.CONFLICT, "Đã tồn tại trong lớp học");
+      throw new ApiError(httpStatus.CONFLICT, 'Đã tồn tại trong lớp học');
     }
 
     await classroom.save();
 
     return res.status(httpStatus.OK).json({
-      message: "Tham gia thành công",
+      message: 'Tham gia thành công',
       code: httpStatus.OK,
       data: {
         classroom,
-      }
+      },
     });
-
   } catch (error) {
     console.log(error);
     next(error);
   }
-}
+};
 
 const leaveClass = async (req, res, next) => {
   const { classId } = req.params;
@@ -229,13 +229,13 @@ const leaveClass = async (req, res, next) => {
     const classroom = await Class.findById(classId);
 
     if (!classroom) {
-      throw new ApiError(httpStatus.NOT_FOUND, "Không tim thấy lớp học");
+      throw new ApiError(httpStatus.NOT_FOUND, 'Không tim thấy lớp học');
     }
 
     if (classroom.students?.includes(studentId)) {
       classroom.students.remove(studentId);
     } else {
-      throw new ApiError(httpStatus.NOT_FOUND, "Không tồn tại trong lớp học");
+      throw new ApiError(httpStatus.NOT_FOUND, 'Không tồn tại trong lớp học');
     }
 
     await classroom.save();
@@ -247,11 +247,10 @@ const leaveClass = async (req, res, next) => {
         classroom,
       },
     });
-
   } catch (error) {
     next(error);
   }
-}
+};
 
 module.exports = {
   createClass,

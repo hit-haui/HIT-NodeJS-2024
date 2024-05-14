@@ -9,12 +9,12 @@ const createUser = async (req, res, next) => {
     const { fullname, email, password } = req.body;
 
     if (!fullname || !email || !password) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "vui long dien du thong tin!");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'vui long dien du thong tin!');
     }
 
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
-      throw new ApiError(httpStatus.CONFLICT, "Email da ton tai. Vui long su dung email khac!");
+      throw new ApiError(httpStatus.CONFLICT, 'Email da ton tai. Vui long su dung email khac!');
     }
 
     const user = await User.create({ fullname, email, password });
@@ -32,15 +32,12 @@ const createUser = async (req, res, next) => {
 };
 
 const getUsers = async (req, res, next) => {
-
   const { limit = 10, page = 1, sortBy = 'createdAt : desc, fullname: desc' } = req.query;
 
   const skip = (+page - 1) * +limit;
 
   const [field, value] = sortBy.split(':');
   const sort = { [field]: value === 'asc' ? 1 : -1 };
-
-
 
   try {
     const query = {};
