@@ -94,22 +94,41 @@ const getClassById = async (req, res) => {
 };
 
 const getAllClass = async (req, res) => {
-  try{
-    const classes = await Class.find({}).populate([
-      {
-        path:'teacher',
-        select: 'id fullname email avatar'
-      },
-      {
-        path:'students',
-        select: 'id fullname email avatar'
-      }
-    ])
+  const { limit = 10, page = 1, sortBy = 'createdAt:desc' } = req.query;
+  const skip = (+page - 1) * +limit;
+
+  const [field, value] = sortBy.split(':');
+  const sort = { [field]: value === 'asc' ? 1 : -1 };
+
+  try {
+    const query = {};
+
+    const classes = await Class.find(query)
+      .limit(limit)
+      .skip(skip)
+      .sort(sort)
+      .populate([
+        {
+          path: 'teacher',
+          select: 'id fullname email avatar',
+        },
+        {
+          path: 'students',
+          select: 'id fullname email avatar',
+        },
+      ]);
+
+    const totalResults = await Class.countDocuments(query);
+
     res.status(httpStatus.OK).json({
       message: 'Lấy thành công các lớp học',
       code: httpStatus.OK,
       data: {
         classes,
+        limit: +limit,
+        currentPage: +page,
+        totalPages: Math.ceil(totalResults / +limit),
+        totalResults,
       },
     });
   } catch (error) {
@@ -119,7 +138,7 @@ const getAllClass = async (req, res) => {
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-}
+};
 
 const updateClassById = async (req, res) => {
   const { classId } = req.params;
@@ -161,32 +180,31 @@ const updateClassById = async (req, res) => {
         classroom,
       },
     });
-
-  }catch(error){
+  } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       message: 'Đã xảy ra lỗi vui thử được thử lại',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-}
+};
 
 const deleteClassById = async (req, res) => {
-  const {classId} = req.params;
+  const { classId } = req.params;
 
   if (!checkIdMongo(classId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
       message: 'Vui lòng truyền đúng định dạng ObjectId',
       code: httpStatus.BAD_REQUEST,
     });
-  }  
+  }
 
-  try{
+  try {
     const classDel = await Class.findByIdAndDelete(classId);
 
-    if(!classDel){
+    if (!classDel) {
       return res.status(httpStatus.NOT_FOUND).json({
-        message: "Không tim thấy lớp học",
+        message: 'Không tim thấy lớp học',
         code: httpStatus.NOT_FOUND,
       });
     }
@@ -196,43 +214,42 @@ const deleteClassById = async (req, res) => {
       code: httpStatus.OK,
       data: {
         classDel,
-      }
+      },
     });
-
-  }catch(error){
+  } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: "Đã xảy ra lỗi",
+      message: 'Đã xảy ra lỗi',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-}
+};
 
 const joinClass = async (req, res) => {
-  const {classId} = req.params;
-  const {studentId} = req.body;
+  const { classId } = req.params;
+  const { studentId } = req.body;
 
-  if(!checkIdMongo(classId) ){
+  if (!checkIdMongo(classId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
       message: 'Vui lòng truyền đúng định dạng ObjectId',
       code: httpStatus.BAD_REQUEST,
     });
   }
 
-  try{
+  try {
     const classroom = await Class.findById(classId);
 
-    if(!classroom){
+    if (!classroom) {
       return res.status(httpStatus.NOT_FOUND).json({
-        message: "Không tim thấy lớp học",
+        message: 'Không tim thấy lớp học',
         code: httpStatus.NOT_FOUND,
       });
     }
 
-    if(!classroom.students?.includes(studentId)){
+    if (!classroom.students?.includes(studentId)) {
       classroom.students.push(studentId);
-    }else{
+    } else {
       return res.status(httpStatus.CONFLICT).json({
-        message: "Đã tồn tại trong lớp học",
+        message: 'Đã tồn tại trong lớp học',
         code: httpStatus.CONFLICT,
       });
     }
@@ -240,49 +257,48 @@ const joinClass = async (req, res) => {
     await classroom.save();
 
     return res.status(httpStatus.OK).json({
-      message: "Tham gia thành công",
+      message: 'Tham gia thành công',
       code: httpStatus.OK,
-      data:{
+      data: {
         classroom,
-      }
+      },
     });
-
-  }catch(error){
+  } catch (error) {
     console.log(error);
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-    message: 'Đã xảy ra lỗi vui lòng thử lại',
-    code: httpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Đã xảy ra lỗi vui lòng thử lại',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-}
+};
 
 const leaveClass = async (req, res) => {
-  const {classId} = req.params;
-  
-  const {studentId} = req.body;
+  const { classId } = req.params;
 
-  if(!checkIdMongo(classId) ){
+  const { studentId } = req.body;
+
+  if (!checkIdMongo(classId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
       message: 'Vui lòng truyền đúng định dạng ObjectId',
       code: httpStatus.BAD_REQUEST,
     });
   }
 
-  try{
+  try {
     const classroom = await Class.findById(classId);
 
-    if(!classroom){
+    if (!classroom) {
       return res.status(httpStatus.NOT_FOUND).json({
-        message: "Không tim thấy lớp học",
+        message: 'Không tim thấy lớp học',
         code: httpStatus.NOT_FOUND,
       });
     }
 
-    if(classroom.students?.includes(studentId)){
+    if (classroom.students?.includes(studentId)) {
       classroom.students.remove(studentId);
-    }else{
+    } else {
       return res.status(httpStatus.NOT_FOUND).json({
-        message: "Không tồn tại trong lớp học",
+        message: 'Không tồn tại trong lớp học',
         code: httpStatus.NOT_FOUND,
       });
     }
@@ -296,14 +312,13 @@ const leaveClass = async (req, res) => {
         classroom,
       },
     });
-
-  }catch(error){
+  } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: "Đã xảy ra lỗi",
+      message: 'Đã xảy ra lỗi',
       code: httpStatus.INTERNAL_SERVER_ERROR,
     });
   }
-}
+};
 
 module.exports = {
   createClass,
