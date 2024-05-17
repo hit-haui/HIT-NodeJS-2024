@@ -3,6 +3,7 @@ const httpStatus = require('http-status');
 const User = require('../models/user.model');
 const Class = require('../models/class.model');
 const checkIdMongo = require('../utils/check-id-mongo');
+const { query } = require('express');
 
 const createClass = async (req, res) => {
   const createBody = req.body;
@@ -94,8 +95,16 @@ const getClassById = async (req, res) => {
 };
 
 const getAllClass = async (req, res) => {
+  const { limit = 10, page = 1, sortBy = 'createdAt : desc'} = req.query;
+  const skip = (page - 1) * limit;
+
+  const [field, value] = sortBy.split(':');
+  const sort = {[field] : value === 'asc' ? 1:-1};
+
   try{
-    const classes = await Class.find({}).populate([
+    const query = {};
+
+    const classes = await Class.find(query).limit(limit).skip(skip).sort(sort).populate([
       {
         path:'teacher',
         select: 'id fullname email avatar'
@@ -105,11 +114,18 @@ const getAllClass = async (req, res) => {
         select: 'id fullname email avatar'
       }
     ])
+
+    const totalResults = await Class.countDocuments(query);
+
     res.status(httpStatus.OK).json({
       message: 'Lấy thành công các lớp học',
       code: httpStatus.OK,
       data: {
         classes,
+        limit: +limit,
+        currentPage: +page,
+        totalPage: Math.ceil(totalResults/limit),
+        totalResults,
       },
     });
   } catch (error) {

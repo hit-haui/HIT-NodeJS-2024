@@ -2,24 +2,19 @@ const httpStatus = require('http-status');
 
 const User = require('../models/user.model');
 const checkIdMongo = require('../utils/check-id-mongo');
+const ApiError = require('../utils/ApiError');
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
     const { fullname, email, password } = req.body;
 
     if (!fullname || !email || !password) {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        message: 'Vui lòng điền đầy đủ thông tin',
-        code: httpStatus.BAD_REQUEST,
-      });
+      throw new Error (httpStatus.BAD_REQUEST, "Vui lòng điền đủ thông tin");
     }
 
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
-      return res.status(httpStatus.CONFLICT).json({
-        message: 'Email đã tồn tại. Vui lòng sử dụng email khác.',
-        code: httpStatus.CONFLICT,
-      });
+      throw new ApiError(httpStatus.CONFLICT,"Vui lòng sử dụng email khác")
     }
 
     const user = await User.create({ fullname, email, password });
@@ -31,22 +26,33 @@ const createUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã xảy ra lỗi vui lòng thử lại',
-      code: httpStatus.INTERNAL_SERVER_ERROR,
-    });
+    next(error);
   }
 };
 
 const getUsers = async (req, res) => {
+  const { limit = 10, page = 1 , sortBy = 'createdAt : desc'} = req.query;
+  const skip = (page - 1)*limit;
+
+  const [field, value] = sortBy.split(':');
+  const sort = { [field] : value === 'asc' ? 1 : -1}
+
   try {
-    const users = await User.find({});
+    const query = {};
+
+    const users = await User.find(query).limit(limit).skip(skip).sort(sort);
+
+    const totalResults = await User.countDocuments(query);
+
     res.json({
       message: 'Lấy thành công mảng người dùng',
       code: httpStatus.OK,
       data: {
-        users: users,
+        users,
+        limit: +limit,
+        currentPage: +page,
+        totalPage: Math.ceil(totalResults/limit),
+        totalResults,
       },
     });
   } catch (error) {
