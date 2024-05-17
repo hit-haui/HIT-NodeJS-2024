@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const morgan = require('morgan');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,10 +8,11 @@ const httpStatus = require('http-status');
 const viewRoute = require('./routes/view.route');
 const userRoute = require('./routes/user.route');
 const classRoute = require('./routes/class.route');
+const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const mongoURI = process.env.MONGO_URI || 'mongodb+srv://test1:4fK6YbCCk00EKoJB@cluster0.els5fh1.mongodb.net/huy';
+const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/';
 
 app.use(express.json());
 app.set('views', './views');
@@ -21,6 +23,14 @@ app.use(morgan('dev'));
 
 app.use('/auth', viewRoute);
 
+let countAccess = 0;
+
+// app.use((req, res, next) => {
+//   countAccess++;
+//   console.log('Số lượng truy cập : ' + countAccess);
+//   next();
+// });
+
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/classes', classRoute);
 
@@ -30,6 +40,8 @@ app.all('*', (req, res) => {
     code: httpStatus.NOT_FOUND,
   });
 });
+
+app.use(errorHandler);
 
 mongoose
   .connect(mongoURI)
