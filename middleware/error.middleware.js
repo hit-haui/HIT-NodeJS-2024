@@ -1,11 +1,11 @@
 const httpStatus = require("http-status");
 
 const errorhandler = (error, req, res, next) => {
-    const code = error.code || httpStatus.INTERNAL_SERVER_ERROR;
-    const mesage = error.mesage || 'Internal Server Error';
+    const code = error.status || httpStatus.INTERNAL_SERVER_ERROR;
+    const message = error.message || 'Internal Server Error';
 
     res.status(code).json({
-        mesage,
+        message,
         code,
     });
 };
