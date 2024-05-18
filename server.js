@@ -8,6 +8,7 @@ const httpStatus = require('http-status');
 const viewRoute = require('./routes/view.route');
 const userRoute = require('./routes/user.route');
 const classRoute = require('./routes/class.route');
+const upload = require('./middlewares/multer.middleware');
 const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
@@ -18,10 +19,16 @@ app.use(express.json());
 app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
+app.use('/static/uploads', express.static('uploads'));
 
 app.use(morgan('dev'));
 
 app.use('/auth', viewRoute);
+
+app.post('/upload', upload.single('file'), (req, res) => {
+  const file = req.file;
+  res.send(file);
+});
 
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/classes', classRoute);
