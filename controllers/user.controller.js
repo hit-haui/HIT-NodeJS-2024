@@ -1,8 +1,8 @@
 const httpStatus = require('http-status');
 
+const ApiError = require('../utils/ApiError');
 const User = require('../models/user.model');
 const checkIdMongo = require('../utils/check-id-mongo');
-
 const createUser = async (req, res , next) => {
   try {
     const { fullname, email, password } = req.body;

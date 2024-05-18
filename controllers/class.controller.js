@@ -60,7 +60,7 @@ const getClassById = async (req, res,next) => {
     }
 
     res.status(httpStatus.OK).json({
-      message: 'Đã tạo lớp học',
+      message: 'Láy thông tin lớp học thành công',
       code: httpStatus.OK,
       data: {
         class: classroom,
