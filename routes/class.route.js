@@ -6,7 +6,11 @@ const classRoute = express.Router();
 
 classRoute.route('/').post(classController.createClass).get(classController.getAllClass);
 
-classRoute.route('/:classId').get(classController.getClassById).post(classController.updateClassById).delete(classController.deleteClassById);
+classRoute
+  .route('/:classId')
+  .get(classController.getClassById)
+  .post(classController.updateClassById)
+  .delete(classController.deleteClassById);
 
 classRoute.route('/:classId/join').post(classController.joinClass);
 

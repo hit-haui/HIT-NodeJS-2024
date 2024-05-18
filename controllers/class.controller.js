@@ -11,7 +11,7 @@ const createClass = async (req, res, next) => {
   const { name, teacher, place } = createBody;
 
   if (!name || !place || !teacher) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng điền đầy đủ thông tin")
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng điền đầy đủ thông tin');
   }
 
   if (!checkIdMongo(teacher)) {
@@ -35,7 +35,7 @@ const createClass = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
@@ -66,7 +66,7 @@ const getClassById = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
@@ -76,18 +76,22 @@ const getAllClass = async (req, res, next) => {
 
   const [field, value] = sortBy.split(':');
   const sort = { [field]: value === 'asc' ? 1 : -1 };
-  try{
+  try {
     const query = {};
-    const classes = await Class.find(query).populate([
-      {
-        path:'teacher',
-        select: 'id fullname email avatar'
-      },
-      {
-        path:'students',
-        select: 'id fullname email avatar'
-      }
-    ]).limit(limit).skip(skip).sort(sort);
+    const classes = await Class.find(query)
+      .populate([
+        {
+          path: 'teacher',
+          select: 'id fullname email avatar',
+        },
+        {
+          path: 'students',
+          select: 'id fullname email avatar',
+        },
+      ])
+      .limit(limit)
+      .skip(skip)
+      .sort(sort);
 
     const totalResults = await Class.countDocuments(query);
 
@@ -103,9 +107,9 @@ const getAllClass = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 const updateClassById = async (req, res, next) => {
   const { classId } = req.params;
@@ -113,7 +117,7 @@ const updateClassById = async (req, res, next) => {
   const updateBody = req.body;
 
   if (JSON.stringify(updateBody) == '{}') {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng điền đầy đủ thông tin")
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng điền đầy đủ thông tin');
   }
 
   if (!checkIdMongo(classId)) {
@@ -138,23 +142,22 @@ const updateClassById = async (req, res, next) => {
         classroom,
       },
     });
-
-  }catch(error){
-    next(error)
+  } catch (error) {
+    next(error);
   }
-}
+};
 
 const deleteClassById = async (req, res, next) => {
-  const {classId} = req.params;
+  const { classId } = req.params;
 
   if (!checkIdMongo(classId)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }  
+  }
 
-  try{
+  try {
     const classDel = await Class.findByIdAndDelete(classId);
 
-    if(!classDel){
+    if (!classDel) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Không tìm thấy lớp học');
     }
 
@@ -163,70 +166,68 @@ const deleteClassById = async (req, res, next) => {
       code: httpStatus.OK,
       data: {
         classDel,
-      }
+      },
     });
-
-  }catch(error){
-    next(error)
+  } catch (error) {
+    next(error);
   }
-}
+};
 
 const joinClass = async (req, res, next) => {
-  const {classId} = req.params;
-  const {studentId} = req.body;
+  const { classId } = req.params;
+  const { studentId } = req.body;
 
-  if(!checkIdMongo(classId) ){
+  if (!checkIdMongo(classId)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
   }
 
-  try{
+  try {
     const classroom = await Class.findById(classId);
 
-    if(!classroom){
+    if (!classroom) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Không tìm thấy lớp học');
     }
 
-    if(!classroom.students?.includes(studentId)){
+    if (!classroom.students?.includes(studentId)) {
       classroom.students.push(studentId);
-    }else{
-      throw new ApiError(httpStatus.CONFLICT, "Đã tồn tại trong lớp học");
+    } else {
+      throw new ApiError(httpStatus.CONFLICT, 'Đã tồn tại trong lớp học');
     }
 
     await classroom.save();
 
     return res.status(httpStatus.OK).json({
-      message: "Tham gia thành công",
+      message: 'Tham gia thành công',
       code: httpStatus.OK,
-      data:{
+      data: {
         classroom,
-      }
+      },
     });
-
-  }catch(error){
-    next(error)
+  } catch (error) {
+    next(error);
   }
-}
+};
 
 const leaveClass = async (req, res, next) => {
-  const {classId} = req.params;
-  
-  const {studentId} = req.body;
+  const { classId } = req.params;
 
-  if(!checkIdMongo(classId) ){
+  const { studentId } = req.body;
+
+  if (!checkIdMongo(classId)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
   }
 
-  try{
+  try {
     const classroom = await Class.findById(classId);
 
-    if(!classroom){
+    if (!classroom) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Không tìm thấy lớp học');
     }
 
-    if(classroom.students?.includes(studentId)){
+    if (classroom.students?.includes(studentId)) {
       classroom.students.remove(studentId);
-    }else{
-      throw new ApiError(httpStatus.NOT_FOUND, "Không tồn tại trong lớp học")
+    } else {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Không tồn tại trong lớp học');
     }
 
     await classroom.save();
@@ -238,11 +239,10 @@ const leaveClass = async (req, res, next) => {
         classroom,
       },
     });
-
-  }catch(error){
-    next(error)
+  } catch (error) {
+    next(error);
   }
-}
+};
 
 module.exports = {
   createClass,
