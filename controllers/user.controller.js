@@ -8,12 +8,12 @@ const createUser = async (req, res , next) => {
     const { fullname, email, password } = req.body;
 
     if (!fullname || !email || !password) {
-     throw new ApiError(http.status.BAD_REQUEST, "Vui lòng điền đầy đủ thông tin ");
+     throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng điền đầy đủ thông tin ");
     }
 
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
-      throw new ApiError(http.status.BAD_REQUEST, "Email đã tồn tại. Vui lòng sử dụng email khác.");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Email đã tồn tại. Vui lòng sử dụng email khác.");
     }
 
     const user = await User.create({ fullname, email, password });
@@ -60,13 +60,13 @@ const getUserById = async (req, res,next) => {
   const { userId } = req.params;
 
   if (!checkIdMongo(userId)) {
-    throw new ApiError(http.status.BAD_REQUEST, "Vui lòng truyền đúng định dạng ObjectId");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng truyền đúng định dạng ObjectId");
   }
   
   try {
     const user = await User.findById(userId);
     if (!user) {
-      throw new ApiError(http.status.BAD_REQUEST, "Không tìm thấy người dùng");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Không tìm thấy người dùng");
     }
 
     res.json({
@@ -86,14 +86,14 @@ const updateUserById = async (req, res) => {
   const updateBody = req.body;
 
   if (!checkIdMongo(userId)) {
-    throw new ApiError(http.status.BAD_REQUEST, "Vui lòng truyền đúng định dạng ObjectId");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng truyền đúng định dạng ObjectId");
   }
 
   try {
     const user = await User.findById(userId);
 
     if (!user) {
-      throw new ApiError(http.status.BAD_REQUEST, "Không tìm thấy người dùng");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Không tìm thấy người dùng");
     }
 
     Object.assign(user, updateBody);
@@ -116,14 +116,14 @@ const deleteUserById = async (req, res) => {
   const { userId } = req.params;
 
   if (!checkIdMongo(userId)) {
-    throw new ApiError(http.status.BAD_REQUEST, "Vui lòng truyền đúng định dạng ObjectId");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng truyền đúng định dạng ObjectId");
   }
 
   try {
     const user = await User.findByIdAndDelete(userId);
 
     if (!user) {
-      throw new ApiError(http.status.BAD_REQUEST, "Không tìm thấy người dùng");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Không tìm thấy người dùng");
     }
 
     res.json({
@@ -142,14 +142,14 @@ const lockUserById = async (req, res) => {
   const { userId } = req.params;
 
   if (!checkIdMongo(userId)) {
-    throw new ApiError(http.status.BAD_REQUEST, "Vui lòng truyền đúng định dạng ObjectId");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng truyền đúng định dạng ObjectId");
   }
 
   try {
     const user = await User.findById(userId);
 
     if (!user) {
-      throw new ApiError(http.status.BAD_REQUEST, "Không tìm thấy người dùng");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Không tìm thấy người dùng");
     }
 
     user.isLocked = !user.isLocked;

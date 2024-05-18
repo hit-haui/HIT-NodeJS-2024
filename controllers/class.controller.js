@@ -15,14 +15,14 @@ const createClass = async (req, res, next) => {
   }
 
   if (!checkIdMongo(teacher)) {
-    throw new ApiError(http.status.BAD_REQUEST, "Vui lòng điền đúng định dạng ObjectId");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng điền đúng định dạng ObjectId");
   }
 
   try {
     const existingTeacher = await User.findById(teacher);
 
     if (!existingTeacher) {
-      throw new ApiError(http.status.NOT_FOUND, "Không tìm thấy giáo viên");
+      throw new ApiError(httpStatus.NOT_FOUND, "Không tìm thấy giáo viên");
     }
 
     const newClass = await Class.create(createBody);
@@ -43,7 +43,7 @@ const getClassById = async (req, res,next) => {
   const { classId } = req.params;
 
   if (!checkIdMongo(classId)) {
-    throw new ApiError(http.status.BAD_REQUEST, "Vui lòng điền đúng định dạng ObjectId");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng điền đúng định dạng ObjectId");
   }
 
   try {
@@ -56,7 +56,7 @@ const getClassById = async (req, res,next) => {
     ]);
 
     if (!classroom) {
-      throw new ApiError(http.status.NOT_FOUND, "Không tìm thấy lớp học");
+      throw new ApiError(httpStatus.NOT_FOUND, "Không tìm thấy lớp học");
     }
 
     res.status(httpStatus.OK).json({
@@ -119,7 +119,7 @@ const updateClassById = async (req, res,next) => {
   const updateBody = req.body;
 
   if (JSON.stringify(updateBody) == '{}') {
-    throw new ApiError(http.status.BAD_REQUEST, "Vui lòng điền đầy đủ thông tin");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng điền đầy đủ thông tin");
   }
 
   if (!checkIdMongo(classId)) {
@@ -130,7 +130,7 @@ const updateClassById = async (req, res,next) => {
     const classroom = await Class.findById(classId);
 
     if (!classroom) {
-      throw new ApiError(http.status.NOT_FOUND, "Không tìm thấy lớp học");
+      throw new ApiError(httpStatus.NOT_FOUND, "Không tìm thấy lớp học");
     }
 
     Object.assign(classroom, updateBody);
@@ -154,14 +154,14 @@ const deleteClassById = async (req, res,next) => {
   const {classId} = req.params;
 
   if (!checkIdMongo(classId)) {
-    throw new ApiError(http.status.BAD_REQUEST, "Vui lòng điền đúng định dạng ObjectId");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng điền đúng định dạng ObjectId");
   }  
 
   try{
     const classDel = await Class.findByIdAndDelete(classId);
 
     if(!classDel){
-      throw new ApiError(http.status.NOT_FOUND, "Không tìm thấy lớp học");
+      throw new ApiError(httpStatus.NOT_FOUND, "Không tìm thấy lớp học");
     }
 
     return res.status(httpStatus.OK).json({
@@ -182,20 +182,20 @@ const joinClass = async (req, res,next) => {
   const {studentId} = req.body;
 
   if(!checkIdMongo(classId) ){
-    throw new ApiError(http.status.BAD_REQUEST, "Vui lòng điền đúng định dạng ObjectId");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng điền đúng định dạng ObjectId");
   }
 
   try{
     const classroom = await Class.findById(classId);
 
     if(!classroom){
-      throw new ApiError(http.status.NOT_FOUND, "Không tìm thấy lớp học");
+      throw new ApiError(httpStatus.NOT_FOUND, "Không tìm thấy lớp học");
     }
 
     if(!classroom.students?.includes(studentId)){
       classroom.students.push(studentId);
     }else{
-      throw new ApiError(http.status.BAD_REQUEST, "Đã tồn tại lớp học");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Đã tồn tại lớp học");
     }
 
     await classroom.save();
@@ -219,20 +219,20 @@ const leaveClass = async (req, res,next) => {
   const {studentId} = req.body;
 
   if(!checkIdMongo(classId) ){
-    throw new ApiError(http.status.BAD_REQUEST, "Vui lòng điền đúng định dạng ObjectId");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Vui lòng điền đúng định dạng ObjectId");
   }
 
   try{
     const classroom = await Class.findById(classId);
 
     if(!classroom){
-      throw new ApiError(http.status.NOT_FOUND, "Không tìm thấy lớp học");
+      throw new ApiError(httpStatus.NOT_FOUND, "Không tìm thấy lớp học");
     }
 
     if(classroom.students?.includes(studentId)){
       classroom.students.remove(studentId);
     }else{
-      throw new ApiError(http.status.BAD_REQUEST, "Lớp học đã tồn tại");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Lớp học đã tồn tại");
     }
 
     await classroom.save();
