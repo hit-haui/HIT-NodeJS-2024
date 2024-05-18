@@ -21,6 +21,14 @@ app.use(express.static('public'));
 
 app.use(morgan('dev'));
 
+let countAccess = 0;
+
+app.use((req, res, next) => {
+  countAccess++;
+  console.log('so luot truy cap:', countAccess);
+  next();
+});
+
 app.use('/auth', viewRoute);
 
 app.use('/api/v1/users', userRoute);
