@@ -8,6 +8,7 @@ const httpStatus = require('http-status');
 const viewRoute = require('./routes/view.route');
 const userRoute = require('./routes/user.route');
 const classRoute = require('./routes/class.route');
+const upload = require('./middlewares/multer.middleware');
 const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
+app.use('/uploads', express.static('uploads'));
 
 app.use(morgan('dev'));
 
@@ -27,6 +29,13 @@ app.use((req, res, next) => {
   countAccess++;
   console.log('so luot truy cap:', countAccess);
   next();
+});
+
+app.post('/uploads', upload.single('file'), (req, res) => {
+  res.send({
+    message: 'File uploaded successfully',
+    file: req.file,
+  });
 });
 
 app.use('/auth', viewRoute);
