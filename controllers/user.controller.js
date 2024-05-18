@@ -1,25 +1,20 @@
 const httpStatus = require('http-status');
 
 const User = require('../models/user.model');
+const ApiError = require('../utils/ApiError');
 const checkIdMongo = require('../utils/check-id-mongo');
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
     const { fullname, email, password } = req.body;
 
     if (!fullname || !email || !password) {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        message: 'Vui lòng điền đầy đủ thông tin',
-        code: httpStatus.BAD_REQUEST,
-      });
+      throw new ApiError(httpStatus.BAD_REQUEST, 'vui long dien du thong tin!');
     }
 
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
-      return res.status(httpStatus.CONFLICT).json({
-        message: 'Email đã tồn tại. Vui lòng sử dụng email khác.',
-        code: httpStatus.CONFLICT,
-      });
+      throw new ApiError(httpStatus.CONFLICT, 'Email da ton tai. Vui long su dung email khac!');
     }
 
     const user = await User.create({ fullname, email, password });
@@ -32,49 +27,53 @@ const createUser = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã xảy ra lỗi vui lòng thử lại',
-      code: httpStatus.INTERNAL_SERVER_ERROR,
-    });
+    next(error);
   }
 };
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
+  const { limit = 10, page = 1, sortBy = 'createdAt : desc, fullname: desc' } = req.query;
+
+  const skip = (+page - 1) * +limit;
+
+  const [field, value] = sortBy.split(':');
+  const sort = { [field]: value === 'asc' ? 1 : -1 };
+
   try {
-    const users = await User.find({});
+    const query = {};
+
+    const users = await User.find().limit(limit).skip(skip).sort(sort);
+
+    const totalResults = await User.countDocuments(query);
+
     res.json({
       message: 'Lấy thành công mảng người dùng',
       code: httpStatus.OK,
       data: {
-        users: users,
+        users,
+        limit: +limit,
+        currentPage: +page,
+        totalPage: Math.ceil(totalResults / +limit),
+        totalResults,
       },
     });
   } catch (error) {
     console.log(error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã xảy ra lỗi vui lòng thử lại',
-      code: httpStatus.INTERNAL_SERVER_ERROR,
-    });
+    next(error);
   }
 };
 
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
   const { userId } = req.params;
 
   if (!checkIdMongo(userId)) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      message: 'Vui lòng truyền đúng định dạng ObjectId',
-      code: httpStatus.BAD_REQUEST,
-    });
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
   }
 
   try {
     const user = await User.findById(userId);
     if (!user) {
-      res.status(httpStatus.NOT_FOUND).json({
-        message: `Không tìm thấy người dùng`,
-        code: httpStatus.NOT_FOUND,
-      });
+      throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
     }
 
     res.json({
@@ -86,32 +85,23 @@ const getUserById = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã xảy ra lỗi vui lòng thử lại',
-      code: httpStatus.INTERNAL_SERVER_ERROR,
-    });
+    next(error);
   }
 };
 
-const updateUserById = async (req, res) => {
+const updateUserById = async (req, res, next) => {
   const { userId } = req.params;
   const updateBody = req.body;
 
   if (!checkIdMongo(userId)) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      message: 'Vui lòng truyền đúng định dạng ObjectId',
-      code: httpStatus.BAD_REQUEST,
-    });
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
   }
 
   try {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(httpStatus.NOT_FOUND).json({
-        message: `Không tìm thấy người dùng`,
-        code: httpStatus.NOT_FOUND,
-      });
+      throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
     }
 
     Object.assign(user, updateBody);
@@ -127,31 +117,22 @@ const updateUserById = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã xảy ra lỗi vui lòng thử lại',
-      code: httpStatus.INTERNAL_SERVER_ERROR,
-    });
+    next(error);
   }
 };
 
-const deleteUserById = async (req, res) => {
+const deleteUserById = async (req, res, next) => {
   const { userId } = req.params;
 
   if (!checkIdMongo(userId)) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      message: 'Vui lòng truyền đúng định dạng ObjectId',
-      code: httpStatus.BAD_REQUEST,
-    });
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
   }
 
   try {
     const user = await User.findByIdAndDelete(userId);
 
     if (!user) {
-      return res.status(httpStatus.NOT_FOUND).json({
-        message: `Không tìm thấy người dùng`,
-        code: httpStatus.NOT_FOUND,
-      });
+      throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
     }
 
     res.json({
@@ -163,31 +144,22 @@ const deleteUserById = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã xảy ra lỗi vui lòng thử lại',
-      code: httpStatus.INTERNAL_SERVER_ERROR,
-    });
+    next(error);
   }
 };
 
-const lockUserById = async (req, res) => {
+const lockUserById = async (req, res, next) => {
   const { userId } = req.params;
 
   if (!checkIdMongo(userId)) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      message: 'Vui lòng truyền đúng định dạng ObjectId',
-      code: httpStatus.BAD_REQUEST,
-    });
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
   }
 
   try {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(httpStatus.NOT_FOUND).json({
-        message: `Không tìm thấy người dùng`,
-        code: httpStatus.NOT_FOUND,
-      });
+      throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
     }
 
     user.isLocked = !user.isLocked;
@@ -202,10 +174,7 @@ const lockUserById = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: 'Đã xảy ra lỗi vui lòng thử lại',
-      code: httpStatus.INTERNAL_SERVER_ERROR,
-    });
+    next(error);
   }
 };
 
