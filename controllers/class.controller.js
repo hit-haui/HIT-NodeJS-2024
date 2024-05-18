@@ -5,7 +5,7 @@ const Class = require('../models/class.model');
 const ApiError = require('../utils/ApiError.js');
 const checkIdMongo = require('../utils/check-id-mongo');
 
-const createClass = async (req, res) => {
+const createClass = async (req, res, next) => {
   const createBody = req.body;
 
   const { name, teacher, place } = createBody;
@@ -39,7 +39,7 @@ const createClass = async (req, res) => {
   }
 };
 
-const getClassById = async (req, res) => {
+const getClassById = async (req, res,next) => {
   const { classId } = req.params;
 
   if (!checkIdMongo(classId)) {
@@ -71,7 +71,7 @@ const getClassById = async (req, res) => {
   }
 };
 
-const getAllClass = async (req, res) => {
+const getAllClass = async (req, res,next) => {
   const { limit = 10, page = 1, sortBy = 'createdAt:desc' } = req.query;
   const skip = (+page - 1) * +limit;
 
@@ -113,7 +113,7 @@ const getAllClass = async (req, res) => {
   }
 }
 
-const updateClassById = async (req, res) => {
+const updateClassById = async (req, res,next) => {
   const { classId } = req.params;
 
   const updateBody = req.body;
@@ -150,7 +150,7 @@ const updateClassById = async (req, res) => {
   }
 }
 
-const deleteClassById = async (req, res) => {
+const deleteClassById = async (req, res,next) => {
   const {classId} = req.params;
 
   if (!checkIdMongo(classId)) {
@@ -177,7 +177,7 @@ const deleteClassById = async (req, res) => {
   }
 }
 
-const joinClass = async (req, res) => {
+const joinClass = async (req, res,next) => {
   const {classId} = req.params;
   const {studentId} = req.body;
 
@@ -213,7 +213,7 @@ const joinClass = async (req, res) => {
   }
 }
 
-const leaveClass = async (req, res) => {
+const leaveClass = async (req, res,next) => {
   const {classId} = req.params;
   
   const {studentId} = req.body;
