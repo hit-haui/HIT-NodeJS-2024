@@ -3,7 +3,6 @@ const httpStatus = require('http-status');
 const User = require('../models/user.model');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const checkIdMongo = require('../utils/check-id-mongo');
 
 const createUser = catchAsync(async (req, res, next) => {
   const { fullname, email, password } = req.body;
@@ -27,152 +26,111 @@ const createUser = catchAsync(async (req, res, next) => {
   });
 });
 
-const getUsers = async (req, res, next) => {
-  const { limit = 10, page = 1, sortBy = 'createdAt : desc, fullname: desc' } = req.query;
+const getUsers = catchAsync(async (req, res, next) => {
+  const { limit, page, sortBy = 'createdAt : desc, fullname: desc' } = req.query;
 
   const skip = (+page - 1) * +limit;
 
   const [field, value] = sortBy.split(':');
   const sort = { [field]: value === 'asc' ? 1 : -1 };
 
-  try {
-    const query = {};
+  const query = {};
 
-    const users = await User.find().limit(limit).skip(skip).sort(sort);
+  const users = await User.find().limit(limit).skip(skip).sort(sort);
 
-    const totalResults = await User.countDocuments(query);
+  const totalResults = await User.countDocuments(query);
 
-    res.json({
-      message: 'Lấy thành công mảng người dùng',
-      code: httpStatus.OK,
-      data: {
-        users,
-        limit: +limit,
-        currentPage: +page,
-        totalPage: Math.ceil(totalResults / +limit),
-        totalResults,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-};
+  res.json({
+    message: 'Lấy thành công mảng người dùng',
+    code: httpStatus.OK,
+    data: {
+      users,
+      limit: +limit,
+      currentPage: +page,
+      totalPage: Math.ceil(totalResults / +limit),
+      totalResults,
+    },
+  });
+});
 
-const getUserById = async (req, res, next) => {
+const getUserById = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
 
-  if (!checkIdMongo(userId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
   }
 
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
-    }
+  res.json({
+    message: `Lấy thông tin người dùng thành công`,
+    code: httpStatus.OK,
+    data: {
+      user,
+    },
+  });
+});
 
-    res.json({
-      message: `Lấy thông tin người dùng thành công`,
-      code: httpStatus.OK,
-      data: {
-        user,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-};
-
-const updateUserById = async (req, res, next) => {
+const updateUserById = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
   const updateBody = req.body;
 
-  if (!checkIdMongo(userId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
   }
 
-  try {
-    const user = await User.findById(userId);
+  Object.assign(user, updateBody);
 
-    if (!user) {
-      throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
-    }
+  await user.save();
 
-    Object.assign(user, updateBody);
+  res.json({
+    message: `Cập nhật thông tin người dùng thành công`,
+    code: httpStatus.OK,
+    data: {
+      user,
+    },
+  });
+});
 
-    await user.save();
-
-    res.json({
-      message: `Cập nhật thông tin người dùng thành công`,
-      code: httpStatus.OK,
-      data: {
-        user,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-};
-
-const deleteUserById = async (req, res, next) => {
+const deleteUserById = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
 
-  if (!checkIdMongo(userId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
+  const user = await User.findByIdAndDelete(userId);
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
   }
 
-  try {
-    const user = await User.findByIdAndDelete(userId);
+  res.json({
+    message: `Xoá người dùng thành công`,
+    code: httpStatus.OK,
+    data: {
+      user,
+    },
+  });
+});
 
-    if (!user) {
-      throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
-    }
-
-    res.json({
-      message: `Xoá người dùng thành công`,
-      code: httpStatus.OK,
-      data: {
-        user,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-};
-
-const lockUserById = async (req, res, next) => {
+const lockUserById = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
 
-  if (!checkIdMongo(userId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
   }
 
-  try {
-    const user = await User.findById(userId);
+  user.isLocked = !user.isLocked;
+  await user.save();
 
-    if (!user) {
-      throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
-    }
-
-    user.isLocked = !user.isLocked;
-    await user.save();
-
-    res.json({
-      message: user.isLocked ? 'Khoá người dùng thành công' : 'Mở khoá người dùng thành công',
-      code: httpStatus.OK,
-      data: {
-        user,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-};
+  res.json({
+    message: user.isLocked ? 'Khoá người dùng thành công' : 'Mở khoá người dùng thành công',
+    code: httpStatus.OK,
+    data: {
+      user,
+    },
+  });
+});
 
 module.exports = {
   createUser,

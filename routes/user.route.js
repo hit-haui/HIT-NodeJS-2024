@@ -6,13 +6,15 @@ const userController = require('../controllers/user.controller');
 
 const userRoute = express.Router();
 
-userRoute.route('/').post(validate(userValidation.createUser), userController.createUser).get(userController.getUsers);
+userRoute.route('/')
+  .post(validate(userValidation.createUser), userController.createUser)
+  .get(validate(userValidation.getUsers), userController.getUsers);
 
 userRoute
   .route('/:userId')
-  .get(userController.getUserById)
+  .get(validate(userValidation.getUserById), userController.getUserById)
   .put(validate(userValidation.updateUser), userController.updateUserById)
-  .options(userController.lockUserById)
-  .delete(userController.deleteUserById);
+  .options(validate(userValidation.lockUser), userController.lockUserById)
+  .delete(validate(userValidation.deleteUser), userController.deleteUserById);
 
 module.exports = userRoute;

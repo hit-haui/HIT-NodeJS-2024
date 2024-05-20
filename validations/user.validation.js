@@ -15,10 +15,16 @@ const createUser = {
 const getUsers = {
   query: joi.object({
     sortBy: joi.string(),
-    limit: joi.number().integer(),
-    page: joi.number().integer(),
+    limit: joi.number().integer().min(1),
+    page: joi.number().integer().min(1),
   }),
 };
+
+const getUserById = {
+  params: joi.object({
+    userId: joi.string().required().custom(objectId),
+  }),
+}
 
 const updateUser = {
   params: joi.object({
@@ -30,4 +36,16 @@ const updateUser = {
   }),
 };
 
-module.exports = { createUser, updateUser };
+const deleteUser = {
+  params: joi.object({
+    userId: joi.string().required().custom(objectId),
+  }),
+}
+
+const lockUser = {
+  params: joi.object({
+    userId: joi.string().required().custom(objectId),
+  }),
+}
+
+module.exports = { createUser, updateUser, getUsers, getUserById, deleteUser, lockUser };
