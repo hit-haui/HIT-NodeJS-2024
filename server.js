@@ -23,25 +23,18 @@ app.use('/uploads', express.static('uploads'));
 
 app.use(morgan('dev'));
 
-let countAccess = 0;
-
-app.use((req, res, next) => {
-  countAccess++;
-  console.log('so luot truy cap:', countAccess);
-  next();
-});
-
-app.post('/uploads', upload.single('file'), (req, res) => {
-  res.send({
-    message: 'File uploaded successfully',
-    file: req.file,
-  });
-});
-
 app.use('/auth', viewRoute);
 
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/classes', classRoute);
+
+app.post('/uploads', upload.single('file'), (req, res) => {
+  const urlPublic = `http://localhost:${port}/uploads/${req.file.filename}`;
+  res.send({
+    message: 'File uploaded successfully',
+    urlPublic,
+  });
+});
 
 app.all('*', (req, res) => {
   res.status(httpStatus.NOT_FOUND).send({
