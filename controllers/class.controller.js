@@ -2,8 +2,8 @@ const httpStatus = require('http-status');
 
 const User = require('../models/user.model');
 const Class = require('../models/class.model');
-const checkIdMongo = require('../utils/check-id-mongo');
 const ApiError = require('../utils/ApiError');
+const checkIdMongo = require('../utils/check-id-mongo');
 
 const createClass = async (req, res, next) => {
   const createBody = req.body;
