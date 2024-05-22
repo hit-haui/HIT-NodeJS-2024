@@ -20,6 +20,11 @@ const getUsers = {
   }),
 };
 
+const getUserById = {
+  params: joi.object({
+    userId: joi.string().required().custom(objectId),
+  })
+}
 const updateUser = {
   params: joi.object({
     userId: joi.string().required().custom(objectId),
@@ -30,4 +35,15 @@ const updateUser = {
   }),
 };
 
-module.exports = { createUser, updateUser };
+const deleteUserById = {
+  params: joi.object({
+    userId: joi.string().required().custom(objectId),
+  })
+}
+
+const lockUserById = {
+  params: joi.object({
+    userId: joi.string().required().custom(objectId),
+  })
+}
+module.exports = { createUser, getUsers, getUserById, updateUser, deleteUserById, lockUserById };
