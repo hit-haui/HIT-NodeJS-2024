@@ -7,7 +7,7 @@ const createClass = {
       'any.required': 'Vui lòng điền tên lớp!',
     }),
     teacher: joi.string().min(5).max(30).required().trim().strict(),
-    place:joi.string().min(5).max(30).required().trim().strict(),
+    place: joi.string().min(5).max(30).required().trim().strict(),
   }),
 }
 
