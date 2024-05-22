@@ -1,10 +1,12 @@
 const express = require('express');
 
+const validate = require("../middlewares/validate.middleware");
 const classController = require('../controllers/class.controller');
+const classValidation = require("../validations/class.validation");
 
 const classRoute = express.Router();
 
-classRoute.route('/').post(classController.createClass).get(classController.getAllClass);
+classRoute.route('/').post(validate(classValidation.createClass), classController.createClass).get(classController.getAllClass);
 
 classRoute
   .route('/:classId')
