@@ -7,8 +7,12 @@ const createUser = {
     fullname: joi.string().min(5).max(30).required().messages({
       'any.required': 'Vui lòng điền tên người dùng',
     }),
-    email: joi.string().email().required(),
-    password: joi.string().min(6).max(30).required(),
+    email: joi.string().email().required().messages({
+      'any.required': 'Vui lòng điền email',
+    }),
+    password: joi.string().min(6).max(30).required().messages({
+      'any.required': 'Vui lòng điền mật khẩu',
+    }),
   }),
 };
 
@@ -30,4 +34,22 @@ const updateUser = {
   }),
 };
 
-module.exports = { createUser, updateUser };
+const getUserById = {
+  params: joi.object({
+    userId: joi.string().required().custom(objectId),
+  }),
+};
+
+const deleteUserById = {
+  params: joi.object({
+    userId: joi.string().required().custom(objectId),
+  }),
+};
+
+const lockUserById = {
+  params: joi.object({
+    userId: joi.string().required().custom(objectId),
+  }),
+};
+
+module.exports = { createUser, getUsers, updateUser, getUserById, deleteUserById, lockUserById };
