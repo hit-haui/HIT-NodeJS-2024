@@ -8,10 +8,6 @@ const checkIdMongo = require('../utils/check-id-mongo');
 const createUser = catchAsync(async (req, res, next) => {
   const { fullname, email, password } = req.body;
 
-  if (!fullname || !email || !password) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'vui long dien du thong tin!');
-  }
-
   const existingEmail = await User.findOne({ email });
   if (existingEmail) {
     throw new ApiError(httpStatus.CONFLICT, 'Email da ton tai. Vui long su dung email khac!');
@@ -57,10 +53,6 @@ const getUsers = catchAsync(async (req, res, next) => {
 const getUserById = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
 
-  if (!checkIdMongo(userId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
   const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
@@ -78,10 +70,6 @@ const getUserById = catchAsync(async (req, res, next) => {
 const updateUserById = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
   const updateBody = req.body;
-
-  if (!checkIdMongo(userId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
 
   const user = await User.findById(userId);
 
@@ -105,10 +93,6 @@ const updateUserById = catchAsync(async (req, res, next) => {
 const deleteUserById = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
 
-  if (!checkIdMongo(userId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
   const user = await User.findByIdAndDelete(userId);
 
   if (!user) {
@@ -126,10 +110,6 @@ const deleteUserById = catchAsync(async (req, res, next) => {
 
 const lockUserById = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
-
-  if (!checkIdMongo(userId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
 
   const user = await User.findById(userId);
 

@@ -10,9 +10,9 @@ userRoute.route('/').post(validate(userValidation.createUser), userController.cr
 
 userRoute
   .route('/:userId')
-  .get(userController.getUserById)
+  .get(validate(userValidation.getUser), userController.getUserById)
   .put(validate(userValidation.updateUser), userController.updateUserById)
   .options(userController.lockUserById)
-  .delete(userController.deleteUserById);
+  .delete(validate(userValidation.deleteUser), userController.deleteUserById);
 
 module.exports = userRoute;

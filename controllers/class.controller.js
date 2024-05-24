@@ -11,14 +11,6 @@ const createClass = catchAsync(async (req, res, next) => {
 
   const { name, teacher, place } = createBody;
 
-  if (!name || !place || !teacher) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui điền đầy đủ thông tin');
-  }
-
-  if (!checkIdMongo(teacher)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
   const existingTeacher = await User.findById(teacher);
 
   if (!existingTeacher) {
@@ -38,10 +30,6 @@ const createClass = catchAsync(async (req, res, next) => {
 
 const getClassById = catchAsync(async (req, res, next) => {
   const { classId } = req.params;
-
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
 
   const classroom = await Class.findById(classId).populate([
     {
@@ -64,7 +52,7 @@ const getClassById = catchAsync(async (req, res, next) => {
 });
 
 const getAllClass = catchAsync(async (req, res, next) => {
-  const { limit = 10, page = 1, sortBy = 'startDate: aesc, name : aesc' } = req.body;
+  const { limit = 10, page = 1, sortBy = 'startDate: asc, name : asc' } = req.query;
 
   const skip = (+page - 1) * +limit;
 
@@ -108,14 +96,6 @@ const updateClassById = catchAsync(async (req, res, next) => {
 
   const updateBody = req.body;
 
-  if (JSON.stringify(updateBody) == '{}') {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui điền đầy đủ thông tin');
-  }
-
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
   const classroom = await Class.findById(classId);
 
   if (!classroom) {
@@ -138,10 +118,6 @@ const updateClassById = catchAsync(async (req, res, next) => {
 const deleteClassById = catchAsync(async (req, res, next) => {
   const { classId } = req.params;
 
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
   const classDel = await Class.findByIdAndDelete(classId);
 
   if (!classDel) {
@@ -160,10 +136,6 @@ const deleteClassById = catchAsync(async (req, res, next) => {
 const joinClass = catchAsync(async (req, res, next) => {
   const { classId } = req.params;
   const { studentId } = req.body;
-
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
 
   const classroom = await Class.findById(classId);
 
@@ -192,10 +164,6 @@ const leaveClass = catchAsync(async (req, res, next) => {
   const { classId } = req.params;
 
   const { studentId } = req.body;
-
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
 
   const classroom = await Class.findById(classId);
 
