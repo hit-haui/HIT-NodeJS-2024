@@ -78,7 +78,9 @@ const getUserById = catchAsync (async (req, res, next) => {
 
 const updateUserById = (async (req, res, next) => {
   const { userId } = req.params;
-  const updateBody = req.body;
+  // const updateBody = req.body;
+
+  if (req.file) req.body['avatar'] = req.file.path;
 
   if (!checkIdMongo(userId)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
@@ -90,7 +92,7 @@ const updateUserById = (async (req, res, next) => {
     throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
   }
 
-  Object.assign(user, updateBody);
+  Object.assign(user, req.body);
 
   await user.save();
 
