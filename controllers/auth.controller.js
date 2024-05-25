@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const httpStatus = require('http-status');
 
 const User = require('../models/user.model');
@@ -34,14 +35,38 @@ const login = catchAsync(async (req, res, next) => {
 
   user.password = undefined;
 
+  const accessToken = generateToken({ id: user._id });
+
   res.status(httpStatus.OK).json({
     message: 'Đăng nhập thành công',
     code: httpStatus.OK,
-    data: user,
+    data: {
+      user,
+      accessToken,
+    },
   });
 });
 
+const getMe = async (req, res, next) => {
+  res.status(httpStatus.OK).json({
+    message: 'Thông tin cá nhân người dùng',
+    code: httpStatus.OK,
+    data: {
+      user: req.user,
+    },
+  });
+};
+
+const generateToken = (payload) => {
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
+
+  return token;
+};
+
 module.exports = {
+  getMe,
   login,
   register,
 };
