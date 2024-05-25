@@ -9,6 +9,7 @@ const viewRoute = require('./routes/view.route');
 const authRoute = require('./routes/auth.route');
 const userRoute = require('./routes/user.route');
 const classRoute = require('./routes/class.route');
+const { auth } = require('./middlewares/auth.middleware');
 const upload = require('./middlewares/multer.middleware');
 const errorHandler = require('./middlewares/error.middleware');
 
