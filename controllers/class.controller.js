@@ -8,16 +8,6 @@ const catchAsync = require('../utils/catchAsync');
 
 const createClass = catchAsync(async (req, res) => {
   const createBody = req.body;
-
-  const { name, teacher, place } = createBody;
-
-  if (!name || !place || !teacher) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui điền đầy đủ thông tin');
-  }
-
-  if (!checkIdMongo(teacher)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
   const existingTeacher = await User.findById(teacher);
 
   if (!existingTeacher) {
@@ -38,9 +28,6 @@ const createClass = catchAsync(async (req, res) => {
 const getClassById = catchAsync(async (req, res) => {
   const { classId } = req.params;
 
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
   const classroom = await Class.findById(classId).populate([
     {
       path: 'teacher',
@@ -105,15 +92,6 @@ const updateClassById = catchAsync(async (req, res) => {
   const { classId } = req.params;
 
   const updateBody = req.body;
-
-  if (JSON.stringify(updateBody) == '{}') {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui điền đầy đủ thông tin');
-  }
-
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
   const classroom = await Class.findById(classId);
 
   if (!classroom) {
@@ -158,11 +136,6 @@ const deleteClassById = catchAsync(async (req, res) => {
 const joinClass = catchAsync(async (req, res) => {
   const { classId } = req.params;
   const { studentId } = req.body;
-
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
   const classroom = await Class.findById(classId);
 
   if (!classroom) {
@@ -190,10 +163,6 @@ const leaveClass = catchAsync(async (req, res) => {
   const { classId } = req.params;
 
   const { studentId } = req.body;
-
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
 
   const classroom = await Class.findById(classId);
 
