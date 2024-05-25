@@ -7,7 +7,7 @@ const validate = (schema) => (req, res, next) => {
 
     if (error) {
       const { details } = error;
-      const messages = details.map((detail) => detail.message).join(',');
+      const messages = details.map((detail) => detail.message).join(',').replace(/"/g, '');
 
       return res.status(httpStatus.BAD_REQUEST).json({
         message: messages,

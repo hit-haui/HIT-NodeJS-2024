@@ -10,6 +10,7 @@ const userRoute = require('./routes/user.route');
 const classRoute = require('./routes/class.route');
 const upload = require('./middlewares/multer.middleware');
 const errorHandler = require('./middlewares/error.middleware');
+const authRoute = require('./routes/auth.route');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -25,6 +26,7 @@ app.use(morgan('dev'));
 
 app.use('/auth', viewRoute);
 
+app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/classes', classRoute);
 
