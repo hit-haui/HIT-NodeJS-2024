@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const httpStatus = require('http-status');
 
 const viewRoute = require('./routes/view.route');
+const authRoute = require('./routes/auth.route');
 const userRoute = require('./routes/user.route');
 const classRoute = require('./routes/class.route');
 const upload = require('./middlewares/multer.middleware');
@@ -25,6 +26,7 @@ app.use(morgan('dev'));
 
 app.use('/auth', viewRoute);
 
+app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/classes', classRoute);
 
