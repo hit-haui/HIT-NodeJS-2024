@@ -10,4 +10,11 @@ const register = {
   }),
 };
 
-module.exports = { register };
+const login = {
+  body: joi.object({
+    email: joi.string().email().required(),
+    password: joi.string().min(6).max(30).required(),
+  }),
+};
+
+module.exports = { register, login };

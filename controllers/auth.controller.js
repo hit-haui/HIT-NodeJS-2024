@@ -12,13 +12,36 @@ const register = catchAsync(async (req, res, next) => {
 
   await User.create(req.body);
   /// TODO: send email
-  return res.status(httpStatus.CREATED).json({
+  res.status(httpStatus.CREATED).json({
     message: 'Đăng ký người dùng thành công',
     code: httpStatus.CREATED,
     data: [],
   });
 });
 
+const login = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email }).select('+password');
+
+  if (!user || !(await user.isMatchPassword(password))) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Tài khoản hoặc mật khẩu không chính xác');
+  }
+
+  if (user.isLocked) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Tài khoản đã bị khoá');
+  }
+
+  user.password = undefined;
+
+  res.status(httpStatus.OK).json({
+    message: 'Đăng nhập thành công',
+    code: httpStatus.OK,
+    data: user,
+  });
+});
+
 module.exports = {
+  login,
   register,
 };
