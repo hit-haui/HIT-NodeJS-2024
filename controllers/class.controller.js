@@ -1,32 +1,18 @@
 const httpStatus = require('http-status');
 
 const User = require('../models/user.model');
-const Class = require('../models/class.model');
 const ApiError = require('../utils/ApiError');
-const checkIdMongo = require('../utils/check-id-mongo');
+const Class = require('../models/class.model');
 const catchAsync = require('../utils/catchAsync');
 
 const createClass = catchAsync(async (req, res, next) => {
-  const createBody = req.body;
-
-  const { name, teacher, place } = createBody;
-
-  if (!name || !place || !teacher) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui điền đầy đủ thông tin');
-  }
-
-  if (!checkIdMongo(teacher)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
-
-  const existingTeacher = await User.findById(teacher);
+  const existingTeacher = await User.findById(req.body.teacher);
 
   if (!existingTeacher) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Không tìm thấy giáo viên');
   }
 
-  const newClass = await Class.create(createBody);
+  const newClass = await Class.create(req.body);
 
   res.status(httpStatus.CREATED).json({
     mesage: 'Tạo thành công lớp học',
@@ -40,11 +26,6 @@ const createClass = catchAsync(async (req, res, next) => {
 const getClassById = catchAsync(async (req, res, next) => {
   const { classId } = req.params;
 
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
-  
   const classroom = await Class.findById(classId).populate([
     {
       path: 'teacher',
@@ -110,14 +91,6 @@ const updateClassById = catchAsync(async (req, res, next) => {
 
   const updateBody = req.body;
 
-  if (JSON.stringify(updateBody) == '{}') {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui điền đầy đủ thông tin');
-  }
-
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
   const classroom = await Class.findById(classId);
 
   if (!classroom) {
@@ -129,10 +102,10 @@ const updateClassById = catchAsync(async (req, res, next) => {
   classroom.save();
 
   res.json({
-    message: `Cập nhật thông tin classroom thành công`,
+    message: 'Cập nhật thông tin classroom thành công',
     code: httpStatus.OK,
     data: {
-      classroom,
+      class: classroom,
     },
   });
 });
@@ -140,34 +113,24 @@ const updateClassById = catchAsync(async (req, res, next) => {
 const deleteClassById = catchAsync(async (req, res, next) => {
   const { classId } = req.params;
 
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
   const classDel = await Class.findByIdAndDelete(classId);
 
   if (!classDel) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Không tim thấy lớp học');
   }
 
-  return res.status(httpStatus.OK).json({
+  res.status(httpStatus.OK).json({
     message: 'Xóa lớp thành công',
     code: httpStatus.OK,
     data: {
-      classDel,
+      class: classDel,
     },
   });
 });
 
 const joinClass = catchAsync(async (req, res, next) => {
-  const { classId } = req.params;
   const { studentId } = req.body;
-
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
-  const classroom = await Class.findById(classId);
+  const classroom = await Class.findById(req.params.classId);
 
   if (!classroom) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Không tim thấy lớp học');
@@ -185,21 +148,15 @@ const joinClass = catchAsync(async (req, res, next) => {
     message: 'Tham gia thành công',
     code: httpStatus.OK,
     data: {
-      classroom,
+      class: classroom,
     },
   });
 });
 
 const leaveClass = catchAsync(async (req, res, next) => {
-  const { classId } = req.params;
-
   const { studentId } = req.body;
 
-  if (!checkIdMongo(classId)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
-  }
-
-  const classroom = await Class.findById(classId);
+  const classroom = await Class.findById(req.params.classId);
 
   if (!classroom) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Không tim thấy lớp học');
@@ -217,17 +174,17 @@ const leaveClass = catchAsync(async (req, res, next) => {
     message: 'Rời lớp học thành công',
     code: httpStatus.OK,
     class: {
-      classroom,
+      class: classroom,
     },
   });
 });
 
 module.exports = {
-  createClass,
-  getClassById,
-  getAllClass,
-  updateClassById,
-  deleteClassById,
   joinClass,
   leaveClass,
+  createClass,
+  getAllClass,
+  getClassById,
+  updateClassById,
+  deleteClassById,
 };
