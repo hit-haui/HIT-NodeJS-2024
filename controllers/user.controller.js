@@ -27,7 +27,7 @@ const createUser = catchAsync(async (req, res, next) => {
   });
 });
 
-const getUsers =catchAsync (async (req, res, next) => {
+const getUsers = catchAsync(async (req, res, next) => {
   const { limit = 10, page = 1, sortBy = 'createdAt : desc, fullname: desc' } = req.query;
 
   const skip = (+page - 1) * +limit;
@@ -52,10 +52,9 @@ const getUsers =catchAsync (async (req, res, next) => {
       totalResults,
     },
   });
-  
 });
 
-const getUserById = catchAsync (async (req, res, next) => {
+const getUserById = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
 
   if (!checkIdMongo(userId)) {
@@ -76,9 +75,10 @@ const getUserById = catchAsync (async (req, res, next) => {
   });
 });
 
-const updateUserById = (async (req, res, next) => {
+const updateUserById = async (req, res, next) => {
   const { userId } = req.params;
-  const updateBody = req.body;
+
+  if (req.file) req.body['avatar'] = req.file.path;
 
   if (!checkIdMongo(userId)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Vui lòng truyền đúng định dạng ObjectId');
@@ -90,7 +90,7 @@ const updateUserById = (async (req, res, next) => {
     throw new ApiError(httpStatus.NOT_FOUND, `Không tìm thấy người dùng`);
   }
 
-  Object.assign(user, updateBody);
+  Object.assign(user, req.body);
 
   await user.save();
 
@@ -101,9 +101,9 @@ const updateUserById = (async (req, res, next) => {
       user,
     },
   });
-});
+};
 
-const deleteUserById = (async (req, res, next) => {
+const deleteUserById = async (req, res, next) => {
   const { userId } = req.params;
 
   if (!checkIdMongo(userId)) {
@@ -123,9 +123,9 @@ const deleteUserById = (async (req, res, next) => {
       user,
     },
   });
-});
+};
 
-const lockUserById = (async (req, res, next) => {
+const lockUserById = async (req, res, next) => {
   const { userId } = req.params;
 
   if (!checkIdMongo(userId)) {
@@ -148,7 +148,7 @@ const lockUserById = (async (req, res, next) => {
       user,
     },
   });
-});
+};
 
 module.exports = {
   createUser,
