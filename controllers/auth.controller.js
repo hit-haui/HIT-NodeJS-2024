@@ -57,6 +57,42 @@ const getMe = async (req, res, next) => {
   });
 };
 
+const updateProfile = catchAsync(async (req, res, next) => {
+  const user = req.user;
+
+  if (req.file) {
+    user.avatar = req.file.path;
+  }
+
+  Object.assign(user, req.body);
+
+  await user.save();
+
+  res.status(httpStatus.OK).json({
+    message: 'Cập nhật thông tin cá nhân thành công',
+    code: httpStatus.OK,
+    data: {
+      user,
+    },
+  });
+});
+
+const changePassword = catchAsync(async (req, res, next) => {
+  const user = req.user;
+
+  Object.assign(user, { password: req.body.newPassword });
+
+  await user.save();
+
+  res.status(httpStatus.OK).json({
+    message: 'Đổi mật khẩu thành công',
+    code: httpStatus.OK,
+    data: {
+      user,
+    },
+  });
+});
+
 const generateToken = (payload) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
@@ -69,4 +105,6 @@ module.exports = {
   getMe,
   login,
   register,
+  updateProfile,
+  changePassword,
 };
