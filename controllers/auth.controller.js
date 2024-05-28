@@ -78,7 +78,11 @@ const updateProfile = catchAsync(async (req, res, next) => {
 });
 
 const changePassword = catchAsync(async (req, res, next) => {
-  const user = req.user;
+  const user = await User.findById(req.user.id).select('+password');
+
+  if (!(await user.isMatchPassword(req.body.oldPassword))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Mật khẩu cũ không chính xác');
+  }
 
   Object.assign(user, { password: req.body.newPassword });
 
