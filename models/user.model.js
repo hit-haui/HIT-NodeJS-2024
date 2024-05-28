@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 
-const { SALT_WORK_FACTOR } = require('../constants');
+const { SALT_WORK_FACTOR, USER_ROLE_ENUM } = require('../constants');
 
 const Schema = mongoose.Schema;
 
@@ -37,8 +37,8 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'teacher', 'member'],
-      default: 'member',
+      enum: USER_ROLE_ENUM,
+      default: USER_ROLE_ENUM.MEMBER,
     },
   },
   { timestamps: true },
