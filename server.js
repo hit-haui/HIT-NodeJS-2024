@@ -8,9 +8,11 @@ const httpStatus = require('http-status');
 const viewRoute = require('./routes/view.route');
 const userRoute = require('./routes/user.route');
 const classRoute = require('./routes/class.route');
+const authRoute = require('./routes/auth.route');
+
 const upload = require('./middlewares/multer.middleware');
 const errorHandler = require('./middlewares/error.middleware');
-const authRoute = require('./routes/auth.route');
+const {auth} = require("./middlewares/auth.middleware");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,6 +23,12 @@ app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
+
+app.get('/', auth, (req, res) => {
+  return res.send({
+    user: req.user,
+  })
+});
 
 app.use(morgan('dev'));
 

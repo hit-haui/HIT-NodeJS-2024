@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 // const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user.model');
 const ApiError = require('../utils/ApiError');
@@ -44,17 +45,38 @@ const login = catchAsync(async (req, res, next) => {
   if (user.isLocked) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'tai khoan da bi khoa!');
   }
+
+
+  const accessToken = generateToken({ id: user._id });
+
   user.password = null;
   return res.status(httpStatus.CREATED).json({
     message: 'Dang nhap thanh cong!',
     code: httpStatus.OK,
     data: {
       user,
+      accessToken
     },
   });
 })
 
+const generateToken = (payload) => {
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE, });
+  return token;
+}
+
+const getMe = async (req, res, next) => {
+  res.status(httpStatus.OK).json({
+    message: 'Thong tin ca nhan nguoi dung:',
+    code: httpStatus.OK,
+    data: {
+      user: req.user,
+    },
+  });
+};
+
 module.exports = {
   register,
-  login
+  login,
+  getMe
 };
