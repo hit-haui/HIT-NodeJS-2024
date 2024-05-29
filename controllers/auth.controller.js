@@ -6,7 +6,6 @@ const User = require('../models/user.model');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 
-
 const register = catchAsync(async (req, res, next) => {
 
   const existingEmail = await User.findOne({ email: req.body.email });
@@ -75,8 +74,29 @@ const getMe = async (req, res, next) => {
   });
 };
 
+const updateProfile = catchAsync(async (req, res, next) => {
+  const user = req.user;
+
+  if (req.file) {
+    user.avatar = req.file.path;
+  }
+
+  Object.assign(user, req.body);
+
+  await user.save();
+
+  res.json({
+    message: `Cập nhật profile thành công!`,
+    code: httpStatus.OK,
+    data: {
+      user,
+    },
+  });
+});
+
 module.exports = {
   register,
   login,
-  getMe
+  getMe,
+  updateProfile
 };

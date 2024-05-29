@@ -17,4 +17,12 @@ const login = {
   }),
 };
 
-module.exports = { register, login };
+const updateProfile = {
+  body: joi.object({
+    fullname: joi.string().min(5).max(30).optional(),
+    dateOfBirth: joi.date().optional(),
+    avatar: joi.string().optional(),
+  })
+}
+
+module.exports = { register, login, updateProfile };

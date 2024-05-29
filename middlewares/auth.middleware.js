@@ -16,7 +16,7 @@ const auth = catchAsync(async (req, res, next) => {
 
   console.log(payload);
 
-  const user =await User.findById(payload.userId);
+  const user =await User.findById(payload.id);
 
   if (!user) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Vui long dang nhap he thong!');
