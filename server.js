@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const httpStatus = require('http-status');
 
 const viewRoute = require('./routes/view.route');
+const authRoute = require('./routes/auth.route');
 const userRoute = require('./routes/user.route');
 const classRoute = require('./routes/class.route');
 const authRoute = require('./routes/auth.route');
@@ -16,7 +17,7 @@ const {auth} = require("./middlewares/auth.middleware");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const mongoURI = process.env.MONGO_URI || 'mongodb+srv://test1:4fK6YbCCk00EKoJB@cluster0.els5fh1.mongodb.net/huy';
+const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/hit-nodejs-2024';
 
 app.use(express.json());
 app.set('views', './views');
@@ -32,6 +33,7 @@ app.get('/', auth, (req, res) => {
 
 app.use(morgan('dev'));
 
+// view
 app.use('/auth', viewRoute);
 
 app.use('/api/v1/auth', authRoute);
