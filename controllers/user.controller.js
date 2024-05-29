@@ -62,7 +62,7 @@ const getUserById = catchAsync(async (req, res, next) => {
   });
 });
 
-const updateUserById = (async (req, res, next) => {
+const updateUserById = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
   // const updateBody = req.body;
 
@@ -85,7 +85,7 @@ const updateUserById = (async (req, res, next) => {
       user,
     },
   });
-};
+});
 
 const deleteUserById = async (req, res, next) => {
   const user = await User.findByIdAndDelete(req.params.userId);
