@@ -94,9 +94,27 @@ const updateProfile = catchAsync(async (req, res, next) => {
   });
 });
 
+const changePassword = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  console.log(user);
+
+  Object.assign(user, { password: req.body.newPassword });
+
+  await user.save();
+
+  res.json({
+    message: 'Cập nhật mật khẩu thành công!',
+    code: httpStatus.OK,
+    data: {
+      user,
+    },
+  });
+});
+
 module.exports = {
   register,
   login,
   getMe,
-  updateProfile
+  updateProfile,
+  changePassword
 };
