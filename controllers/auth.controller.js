@@ -57,6 +57,25 @@ const getMe = async (req, res, next) => {
   });
 };
 
+const updateProfile = catchAsync(async (req, res, next) => {
+  if (req.file) req.body['avatar'] = req.file.path;
+
+  const user = await User.findOne({ email: req.body.email });
+  if (user) {
+    throw new ApiError(httpStatus.CONFLICT, 'Địa chỉ email đã tồn tại');
+  }
+
+  Object.assign(user, req.body);
+
+  await user.save();
+
+  res.status(httpStatus.OK).json({
+    message: 'Cập nhật người dùng thành công',
+    code: httpStatus.OK,
+    data: [],
+  });
+});
+
 const generateToken = (payload) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
@@ -69,4 +88,5 @@ module.exports = {
   getMe,
   login,
   register,
+  updateProfile
 };

@@ -17,4 +17,13 @@ const login = {
   }),
 };
 
-module.exports = { register, login };
+const updateProfile = {
+  body: joi.object({
+    fullname: joi.string().min(5).max(30).optional().messages({
+      'any.required': 'Vui lòng điền tên người dùng',
+    }),
+    email: joi.string().email().optional()
+  }),
+}
+
+module.exports = { register, login, updateProfile };
