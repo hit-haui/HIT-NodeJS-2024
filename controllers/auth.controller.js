@@ -58,23 +58,49 @@ const getMe = async (req, res, next) => {
 };
 
 const updateProfile = catchAsync(async (req, res, next) => {
-  if (req.file) req.body['avatar'] = req.file.path;
+  if (req.file) {
+    req.body['avatar'] = req.file.path;
+  }
 
-  const user = await User.findOne({ email: req.body.email });
-  if (user) {
+  const user = await User.findById(req.user.id);
+
+  const userExist = await User.findOne({ email: req.body.email })
+  if (userExist) {
     throw new ApiError(httpStatus.CONFLICT, 'Địa chỉ email đã tồn tại');
   }
 
-  Object.assign(user, req.body);
+  const { fullname, dateOfBirth } = req.body;
+
+  Object.assign(user, { fullname, dateOfBirth });
 
   await user.save();
 
   res.status(httpStatus.OK).json({
-    message: 'Cập nhật người dùng thành công',
+    message: 'Cập nhật profile thành công',
     code: httpStatus.OK,
     data: [],
   });
 });
+
+const changePassword = catchAsync(async (req, res, next) => {
+  const { password, newPassword } = req.body;
+
+  const user = await User.findById(req.user.id).select('+password');
+
+  if (!(await user.isMatchPassword(password))) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Mật khẩu không chính xác');
+  }
+
+  user.password = newPassword;
+
+  await user.save();
+
+  res.status(httpStatus.OK).json({
+    message: 'Đổi mật khẩu thành công',
+    code: httpStatus.OK,
+    data: [],
+  });
+})
 
 const generateToken = (payload) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -88,5 +114,6 @@ module.exports = {
   getMe,
   login,
   register,
-  updateProfile
+  updateProfile,
+  changePassword
 };

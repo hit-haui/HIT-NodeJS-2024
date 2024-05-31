@@ -16,4 +16,6 @@ authRoute.get('/me', auth, authController.getMe);
 
 authRoute.put('/me', auth, upload.single('avatar'), validate(authValidation.updateProfile), authController.updateProfile);
 
+authRoute.post('/change-password', auth, validate(authValidation.changePassword), authController.changePassword);
+
 module.exports = authRoute;

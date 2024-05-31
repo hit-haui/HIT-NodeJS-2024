@@ -22,8 +22,17 @@ const updateProfile = {
     fullname: joi.string().min(5).max(30).optional().messages({
       'any.required': 'Vui lòng điền tên người dùng',
     }),
-    email: joi.string().email().optional()
+    dateOfBirth: joi.date().optional()
   }),
 }
 
-module.exports = { register, login, updateProfile };
+const changePassword = {
+  body: joi.object({
+    password: joi.string().required().messages({
+      'any.required': 'Phải điền mật khẩu cũ',
+    }),
+    newPassword: joi.string().min(6).max(30).required()
+  }),
+}
+
+module.exports = { register, login, updateProfile, changePassword };
