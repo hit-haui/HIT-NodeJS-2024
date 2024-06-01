@@ -4,8 +4,11 @@ const upload = require('../middlewares/multer.middleware');
 const validate = require('../middlewares/validate.middleware');
 const userValidation = require('../validations/user.validation');
 const userController = require('../controllers/user.controller');
+const { auth, author } = require('../middlewares/auth.middleware');
 
 const userRoute = express.Router();
+
+userRoute.use(auth, author(['admin', 'teacher']));
 
 userRoute.route('/').post(validate(userValidation.createUser), userController.createUser).get(userController.getUsers);
 

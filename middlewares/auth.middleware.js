@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
+
+const httpStatus = require('http-status');
+const User = require('../models/user.model');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const User = require('../models/user.model');
-const httpStatus = require('http-status');
 
 const auth = catchAsync(async (req, res, next) => {
   const token = extracToken(req);
@@ -27,6 +28,14 @@ const auth = catchAsync(async (req, res, next) => {
   next();
 });
 
+const author = (rolesAllowed) =>
+  catchAsync(async (req, res, next) => {
+    if (!rolesAllowed.includes(req.user.role)) {
+      throw new ApiError(httpStatus.FORBIDDEN, 'Bạn không có quyền truy cập');
+    }
+    next();
+  });
+
 const extracToken = (req) => {
   let token;
   if (req.headers.authorization?.startsWith('Bearer')) {
@@ -35,4 +44,4 @@ const extracToken = (req) => {
   return token;
 };
 
-module.exports = { auth };
+module.exports = { auth, author };
